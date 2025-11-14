@@ -1,0 +1,28 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzaApp.WebApi", "src\PizzaApp.WebApi\PizzaApp.WebApi.csproj", "{8180D32C-AC30-4733-8CC7-D19DDD229E7B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzaApp.DataAccess", "src\PizzaApp.DataAccess\PizzaApp.DataAccess.csproj", "{BFF1E8E1-4845-4766-AD48-8575ADE1F19E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzaApp.BL", "src\PizzaApp.BL\PizzaApp.BL.csproj", "{4C3FBDB6-CC94-4553-800A-A95EC6D5A4BE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8180D32C-AC30-4733-8CC7-D19DDD229E7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8180D32C-AC30-4733-8CC7-D19DDD229E7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8180D32C-AC30-4733-8CC7-D19DDD229E7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8180D32C-AC30-4733-8CC7-D19DDD229E7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFF1E8E1-4845-4766-AD48-8575ADE1F19E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFF1E8E1-4845-4766-AD48-8575ADE1F19E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFF1E8E1-4845-4766-AD48-8575ADE1F19E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFF1E8E1-4845-4766-AD48-8575ADE1F19E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C3FBDB6-CC94-4553-800A-A95EC6D5A4BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C3FBDB6-CC94-4553-800A-A95EC6D5A4BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C3FBDB6-CC94-4553-800A-A95EC6D5A4BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C3FBDB6-CC94-4553-800A-A95EC6D5A4BE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
