@@ -19,6 +19,17 @@ public class MenuItemRepository(IDbContextFactory<PizzaAppDbContext> contextFact
             .FirstOrDefaultAsync(m => m.Id == id);
     }
     
+    public async Task<MenuItemEntity?> GetByGuidWithDetailsAsync(Guid guid)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        return await context.MenuItems
+            .Include(m => m.Category)
+            .Include(m => m.Status)
+            .Include(m => m.Discounts)
+            .ThenInclude(md => md.Discount)
+            .FirstOrDefaultAsync(m => m.ExternalId == guid);
+    }
+    
     public async Task<MenuItemEntity?> GetByIdWithStatusAsync(int id)
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
@@ -71,6 +82,58 @@ public class MenuItemRepository(IDbContextFactory<PizzaAppDbContext> contextFact
             .FirstOrDefaultAsync(mi => mi.Id == id);
     }
     
+    public async Task<MenuItemEntity?> GetByGuidWithStatusAsync(Guid guid)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        
+        return await context.MenuItems
+            .Include(mi => mi.Status)
+            .FirstOrDefaultAsync(mi => mi.ExternalId == guid);
+    }
+    
+    public async Task<MenuItemEntity?> GetByGuidWithCategoryAsync(Guid guid)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        
+        return await context.MenuItems
+            .Include(mi => mi.Category)
+            .FirstOrDefaultAsync(mi => mi.ExternalId == guid);
+    }
+    
+    public async Task<MenuItemEntity?> GetByGuidWithDiscountsAsync(Guid guid)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        
+        return await context.MenuItems
+            .Include(mi => mi.Discounts)
+            .ThenInclude(ur => ur.Discount)
+            .FirstOrDefaultAsync(mi => mi.ExternalId == guid);
+    }
+    
+    public async Task<MenuItemEntity?> GetByGuidWithOrdersAsync(Guid guid)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        
+        return await context.MenuItems
+            .Include(mi => mi.OrderItems)
+            .ThenInclude(o => o.Order)
+            .FirstOrDefaultAsync(mi => mi.ExternalId == guid);
+    }
+    
+    public async Task<MenuItemEntity?> GetByGuidWithAllDataAsync(Guid guid)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        
+        return await context.MenuItems
+            .Include(mi => mi.Status)
+            .Include(mi => mi.Category)
+            .Include(mi => mi.Discounts)
+            .ThenInclude(ur => ur.Discount)
+            .Include(mi => mi.OrderItems)
+            .ThenInclude(o => o.Order)
+            .FirstOrDefaultAsync(mi => mi.ExternalId == guid);
+    }
+    
     public async Task<List<MenuItemEntity>> GetAllWithDetailsAsync()
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
@@ -104,6 +167,15 @@ public class MenuItemRepository(IDbContextFactory<PizzaAppDbContext> contextFact
             .ToListAsync();
     }
     
+    public async Task<List<MenuItemEntity>> GetMenuItemsByCategoryGuidAsync(Guid categoryGuid)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        
+        return await context.MenuItems
+            .Include(mi => mi.Category)
+            .Where(mi => mi.Category.ExternalId == categoryGuid)
+            .ToListAsync();
+    }
         
     public async Task<List<MenuItemEntity>> GetMenuItemsByStatusAsync(Status status)
     {
@@ -122,6 +194,16 @@ public class MenuItemRepository(IDbContextFactory<PizzaAppDbContext> contextFact
         return await context.MenuItems
             .Include(mi => mi.Status)
             .Where(mi => mi.StatusId == statusId)
+            .ToListAsync();
+    }
+    
+    public async Task<List<MenuItemEntity>> GetMenuItemsByStatusGuidAsync(Guid statusGuid)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        
+        return await context.MenuItems
+            .Include(mi => mi.Status)
+            .Where(mi => mi.Status.ExternalId == statusGuid)
             .ToListAsync();
     }
 
@@ -174,6 +256,13 @@ public class MenuItemRepository(IDbContextFactory<PizzaAppDbContext> contextFact
         await using var context = await _contextFactory.CreateDbContextAsync();
         return await context.MenuItems.AnyAsync(mi => mi.CategoryId == categoryId);
     }
+    public async Task<bool> ExistsCategoryAsync(Guid categoryGuid)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        return await context.MenuItems
+            .Include(mi => mi.Category)
+            .AnyAsync(mi => mi.Category.ExternalId == categoryGuid);
+    }
     public async Task<List<MenuCategoryEntity>> GetAllCategoriesAsync()
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
@@ -190,12 +279,35 @@ public class MenuItemRepository(IDbContextFactory<PizzaAppDbContext> contextFact
         context.MenuItems.Update(menuItem);
         await context.SaveChangesAsync();
     }
+    
+    public async Task UpdateMenuItemCategoryAsync(MenuItemEntity menuItem, Guid categoryGuid)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+
+        var categoryId = await context.MenuCategories
+            .Where(c => c.ExternalId == categoryGuid)
+            .Select(c => c.Id)
+            .FirstOrDefaultAsync();
+        
+        menuItem.CategoryId = categoryId;
+        menuItem.Category = await context.MenuCategories.FindAsync(categoryId);
+
+        context.MenuItems.Update(menuItem);
+        await context.SaveChangesAsync();
+    }
 
 
     public async Task<bool> ExistsStatusAsync(int statusId)
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
         return await context.MenuItems.AnyAsync(mi => mi.StatusId == statusId);
+    }
+    public async Task<bool> ExistsStatusAsync(Guid statusGuid)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        return await context.MenuItems
+            .Include(mi => mi.Status)
+            .AnyAsync(mi => mi.Status.ExternalId == statusGuid);
     }
     public async Task<List<StatusEntity>> GetAllStatusesAsync()
     {
@@ -207,6 +319,22 @@ public class MenuItemRepository(IDbContextFactory<PizzaAppDbContext> contextFact
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
 
+        menuItem.StatusId = statusId;
+        menuItem.Status = await context.Statuses.FindAsync(statusId);
+
+        context.MenuItems.Update(menuItem);
+        await context.SaveChangesAsync();
+    }
+    
+    public async Task UpdateMenuItemStatusAsync(MenuItemEntity menuItem, Guid statusGuid)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+
+        var statusId = await context.Statuses
+            .Where(s => s.ExternalId == statusGuid)
+            .Select(s => s.Id)
+            .FirstOrDefaultAsync();
+        
         menuItem.StatusId = statusId;
         menuItem.Status = await context.Statuses.FindAsync(statusId);
 
@@ -246,6 +374,37 @@ public class MenuItemRepository(IDbContextFactory<PizzaAppDbContext> contextFact
 
         await context.SaveChangesAsync();
     }
+    
+    public async Task UpdateMenuItemDiscountsAsync(MenuItemEntity menuItem, List<Guid> newDiscountGuids)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+
+        var existingDiscounts = await context.MenuItemDiscounts
+            .Where(ur => ur.MenuItemId == menuItem.Id)
+            .ToListAsync();
+        
+        if (existingDiscounts.Count != 0)
+            context.MenuItemDiscounts.RemoveRange(existingDiscounts);
+        
+        var discountIds = await context.Discounts
+            .Where(d => newDiscountGuids.Contains(d.ExternalId))
+            .Select(d => d.Id)
+            .ToListAsync();
+        
+        var discountsToAdd = discountIds.Select(id => new MenuItemDiscountEntity()
+        {
+            MenuItemId = menuItem.Id,
+            DiscountId = id,
+            CreationTime = DateTime.UtcNow,
+            ModificationTime = DateTime.UtcNow,
+            ExternalId = Guid.NewGuid()
+        }).ToList();
+
+        if (discountsToAdd.Count != 0)
+            context.MenuItemDiscounts.AddRange(discountsToAdd);
+
+        await context.SaveChangesAsync();
+    }
 
     public async Task<MenuItemEntity> SaveWithDiscountsAsync(MenuItemEntity menuItem, List<int> discountIds)
     {
@@ -257,7 +416,32 @@ public class MenuItemRepository(IDbContextFactory<PizzaAppDbContext> contextFact
             menuItem = await SaveAsync(menuItem);
             await UpdateMenuItemDiscountsAsync(menuItem, discountIds);
             await transaction.CommitAsync();
-            return menuItem; // навигационное Discounts мб не настроено будет
+            await context.Entry(menuItem)
+                .Collection(m => m.Discounts)
+                .LoadAsync();
+            return menuItem;
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
+    
+    public async Task<MenuItemEntity> SaveWithDiscountsAsync(MenuItemEntity menuItem, List<Guid> discountGuids)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        await using var transaction = await context.Database.BeginTransactionAsync();
+
+        try
+        {
+            menuItem = await SaveAsync(menuItem);
+            await UpdateMenuItemDiscountsAsync(menuItem, discountGuids);
+            await transaction.CommitAsync();
+            await context.Entry(menuItem)
+                .Collection(m => m.Discounts)
+                .LoadAsync();
+            return menuItem;
         }
         catch
         {
