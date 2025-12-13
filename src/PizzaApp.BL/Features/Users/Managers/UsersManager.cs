@@ -105,7 +105,7 @@ public class UsersManager(IUserRepository userRepository, IMapper mapper, ILogge
             
             var newRoleIds = model.RoleIds.Where(r => allRoleIds.Contains(r)).ToList();
             
-            await userRepository.UpdateUserRolesAsync(userId, newRoleIds);
+            await userRepository.UpdateUserRolesAsync(user, newRoleIds);
 
             var updatedUser = await userRepository.GetByIdWithDetailsAsync(userId);
             return mapper.Map<UserModel>(updatedUser);
