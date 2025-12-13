@@ -10,15 +10,17 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
     {
         e.HasKey(u => u.Id);
         e.HasIndex(u => u.ExternalId).IsUnique();
-        e.Property(u => u.Username).HasMaxLength(255);
+        e.Property(u => u.UserName).HasMaxLength(255);
         e.Property(u => u.Email).HasMaxLength(255).IsRequired(false);
-        e.Property(u => u.Phone).HasMaxLength(20);
-        e.HasIndex(u => u.Username).IsUnique();
+        e.Property(u => u.PhoneNumber).HasMaxLength(20);
+        e.HasIndex(u => u.UserName).IsUnique();
         e.HasIndex(u => u.Email).IsUnique();
-        e.HasIndex(u => u.Phone).IsUnique();
+        e.HasIndex(u => u.PhoneNumber).IsUnique();
 
-        e.ToTable(t => t.HasCheckConstraint("CH_users_valid_email", "\"Email\" ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\\\.[A-Za-z]{2,}$'"));
-        e.ToTable(t => t.HasCheckConstraint("CH_users_valid_phone", "\"Phone\" ~ '^[+]?[0-9\\\\-\\\\(\\\\)\\\\s]{10,15}$'"));
+        // e.ToTable(t => t.HasCheckConstraint("CH_users_valid_email", "\"Email\" ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\\\.[A-Za-z]{2,}$'"));
+        e.ToTable(t => t.HasCheckConstraint("CH_users_valid_phone", "\"PhoneNumber\" ~ '^(\\+?\\d{11}|\\d{10})$'"));
+
+        e.Property(u => u.UserInfoId).IsRequired(false);
 
         e.HasOne(u => u.UserInfo)
             .WithOne(ui => ui.User)

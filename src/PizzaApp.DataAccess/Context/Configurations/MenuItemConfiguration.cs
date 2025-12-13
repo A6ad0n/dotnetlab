@@ -9,6 +9,9 @@ public class MenuItemConfiguration : IEntityTypeConfiguration<MenuItemEntity>
     public void Configure(EntityTypeBuilder<MenuItemEntity> e)
     {
         e.HasKey(mi => mi.Id);
+        e.Property(mi => mi.Id)
+            .ValueGeneratedOnAdd()
+            .UseIdentityColumn();
         e.HasIndex(mi => mi.ExternalId).IsUnique();
         e.Property(mi => mi.Name).HasMaxLength(100);
         e.ToTable(t => t.HasCheckConstraint("CH_menu_item_price", "\"Price\" >= 0"));

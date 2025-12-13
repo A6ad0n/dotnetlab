@@ -9,6 +9,9 @@ public class UserRoleConfiguration : IEntityTypeConfiguration<UserRoleEntity>
     public void Configure(EntityTypeBuilder<UserRoleEntity> e)
     {
         e.HasKey(ur => ur.Id);
+        e.Property(ur => ur.Id)
+            .ValueGeneratedOnAdd()
+            .UseIdentityColumn();  
         e.HasIndex(ur => ur.ExternalId).IsUnique();
 
         e.HasOne(ur => ur.Role)

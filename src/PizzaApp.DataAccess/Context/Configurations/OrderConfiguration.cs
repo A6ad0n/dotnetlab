@@ -9,6 +9,9 @@ public class OrderConfiguration : IEntityTypeConfiguration<OrderEntity>
     public void Configure(EntityTypeBuilder<OrderEntity> e)
     {
         e.HasKey(o => o.Id);
+        e.Property(o => o.Id)
+            .ValueGeneratedOnAdd()
+            .UseIdentityColumn();
         e.HasIndex(o => o.ExternalId).IsUnique();
         e.Property(o => o.UpdatedAt).IsRequired(false);
         e.Property(o => o.StatusChangedAt).IsRequired(false);

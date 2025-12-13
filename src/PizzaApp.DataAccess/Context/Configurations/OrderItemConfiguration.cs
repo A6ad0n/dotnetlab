@@ -9,6 +9,9 @@ public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItemEntity>
     public void Configure(EntityTypeBuilder<OrderItemEntity> e)
     {
         e.HasKey(oi => oi.Id);
+        e.Property(oi => oi.Id)
+            .ValueGeneratedOnAdd()
+            .UseIdentityColumn();
         e.HasIndex(oi => oi.ExternalId).IsUnique();
 
         e.ToTable(t => t.HasCheckConstraint("CH_order_items_unit_price", "\"UnitPrice\" >= 0"));

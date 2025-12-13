@@ -9,6 +9,9 @@ public class MenuItemDiscountConfiguration : IEntityTypeConfiguration<MenuItemDi
     public void Configure(EntityTypeBuilder<MenuItemDiscountEntity> e)
     {
         e.HasKey(mid => mid.Id);
+        e.Property(mid => mid.Id)
+            .ValueGeneratedOnAdd()
+            .UseIdentityColumn();
         e.HasIndex(mid => mid.ExternalId).IsUnique();
 
         e.HasOne(mid => mid.MenuItem)

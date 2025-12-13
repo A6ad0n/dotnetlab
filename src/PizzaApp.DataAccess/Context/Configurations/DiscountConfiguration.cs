@@ -9,6 +9,9 @@ public class DiscountConfiguration : IEntityTypeConfiguration<DiscountEntity>
     public void Configure(EntityTypeBuilder<DiscountEntity> e)
     {
         e.HasKey(d => d.Id);
+        e.Property(d => d.Id)
+            .ValueGeneratedOnAdd()
+            .UseIdentityColumn();
         e.HasIndex(d => d.ExternalId).IsUnique();
         e.Property(d => d.Name).HasMaxLength(50);
 

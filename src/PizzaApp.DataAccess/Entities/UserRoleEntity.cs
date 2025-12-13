@@ -1,13 +1,15 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 
 namespace PizzaApp.DataAccess.Entities;
 
 [Table("user_roles")]
-public class UserRoleEntity : BaseEntity
+public class UserRoleEntity : IdentityUserRole<int>, IBaseEntity
 {
-    public int UserId { get; set; }
+    public int Id { get; set; }
+    public Guid ExternalId { get; set; }
+    public DateTime ModificationTime { get; set; }
+    public DateTime CreationTime { get; set; }
     public virtual UserEntity User { get; set; }
-    
-    public int RoleId { get; set; }
     public virtual RoleEntity Role { get; set; }
 }

@@ -9,6 +9,9 @@ public class MenuCategoryConfiguration : IEntityTypeConfiguration<MenuCategoryEn
     public void Configure(EntityTypeBuilder<MenuCategoryEntity> e)
     {
         e.HasKey(mc => mc.Id);
+        e.Property(mc => mc.Id)
+            .ValueGeneratedOnAdd()
+            .UseIdentityColumn();
         e.HasIndex(mc => mc.ExternalId).IsUnique();
         e.HasIndex(mc => mc.Name).IsUnique();
         e.Property(mc => mc.Name);
