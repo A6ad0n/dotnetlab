@@ -206,6 +206,7 @@ public class UserRepository(IDbContextFactory<PizzaAppDbContext> contextFactory)
         
         return await context.Users
             .Include(u => u.Roles)
+            .ThenInclude(ur => ur.Role)
             .Where(u => u.Roles.Any(ur => ur.Role.ExternalId == roleGuid))
             .ToListAsync();
     }
