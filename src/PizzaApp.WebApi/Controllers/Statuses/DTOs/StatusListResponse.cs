@@ -4,5 +4,5 @@ namespace PizzaApp.WebApi.Controllers.Statuses.DTOs;
 
 public class StatusListResponse
 {
-    List<StatusModel> Statuses { get; set; }
+    public List<StatusModel> Statuses { get; set; }
 }
