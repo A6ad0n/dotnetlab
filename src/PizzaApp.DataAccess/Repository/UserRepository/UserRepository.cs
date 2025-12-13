@@ -19,6 +19,17 @@ public class UserRepository(IDbContextFactory<PizzaAppDbContext> contextFactory)
             .FirstOrDefaultAsync(u => u.Id == id);
     }
     
+    public async Task<UserEntity?> GetByGuidWithDetailsAsync(Guid guid)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        
+        return await context.Users
+            .Include(u => u.UserInfo)
+            .Include(u => u.Roles)
+            .ThenInclude(ur => ur.Role)
+            .FirstOrDefaultAsync(u => u.ExternalId == guid);
+    }
+    
     public async Task<UserEntity?> GetByEmailAsync(string email)
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
@@ -86,6 +97,48 @@ public class UserRepository(IDbContextFactory<PizzaAppDbContext> contextFactory)
             .FirstOrDefaultAsync(u => u.Id == id);
     }
     
+    public async Task<UserEntity?> GetByGuidWithUserInfoAsync(Guid guid)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        
+        return await context.Users
+            .Include(u => u.UserInfo)
+            .FirstOrDefaultAsync(u => u.ExternalId == guid);
+    }
+    
+    public async Task<UserEntity?> GetByGuidWithRolesAsync(Guid guid)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        
+        return await context.Users
+            .Include(u => u.Roles)
+            .ThenInclude(ur => ur.Role)
+            .FirstOrDefaultAsync(u => u.ExternalId == guid);
+    }
+    
+    public async Task<UserEntity?> GetByGuidWithOrdersAsync(Guid guid)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        
+        return await context.Users
+            .Include(u => u.Orders)
+            .ThenInclude(o => o.OrderItems)
+            .FirstOrDefaultAsync(u => u.ExternalId == guid);
+    }
+    
+    public async Task<UserEntity?> GetByGuidWithAllDataAsync(Guid guid)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        
+        return await context.Users
+            .Include(u => u.UserInfo)
+            .Include(u => u.Roles)
+            .ThenInclude(ur => ur.Role)
+            .Include(u => u.Orders)
+            .ThenInclude(o => o.OrderItems)
+            .FirstOrDefaultAsync(u => u.ExternalId == guid);
+    }
+    
     public async Task<List<UserEntity>> GetAllWithAllDataAsync()
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
@@ -144,6 +197,16 @@ public class UserRepository(IDbContextFactory<PizzaAppDbContext> contextFactory)
         return await context.Users
             .Include(u => u.Roles)
             .Where(u => u.Roles.Any(ur => ur.RoleId == roleId))
+            .ToListAsync();
+    }
+    
+    public async Task<List<UserEntity>> GetUsersByRoleGuidAsync(Guid roleGuid)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        
+        return await context.Users
+            .Include(u => u.Roles)
+            .Where(u => u.Roles.Any(ur => ur.Role.ExternalId == roleGuid))
             .ToListAsync();
     }
     
@@ -248,12 +311,12 @@ public class UserRepository(IDbContextFactory<PizzaAppDbContext> contextFactory)
         return await context.Roles.ToListAsync();
     }
     
-    public async Task UpdateUserRolesAsync(int userId, List<int> newRoleIds)
+    public async Task UpdateUserRolesAsync(UserEntity user, List<int> newRoleIds)
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
         
         var existingRoles = await context.UserRoles
-            .Where(ur => ur.UserId == userId)
+            .Where(ur => ur.UserId == user.Id)
             .ToListAsync();
         
         if (existingRoles.Any())
@@ -261,7 +324,38 @@ public class UserRepository(IDbContextFactory<PizzaAppDbContext> contextFactory)
         
         var rolesToAdd = newRoleIds.Select(id => new UserRoleEntity
         {
-            UserId = userId,
+            UserId = user.Id,
+            RoleId = id,
+            CreationTime = DateTime.UtcNow,
+            ModificationTime = DateTime.UtcNow,
+            ExternalId = Guid.NewGuid()
+        }).ToList();
+
+        if (rolesToAdd.Count != 0)
+            context.UserRoles.AddRange(rolesToAdd);
+
+        await context.SaveChangesAsync();
+    }
+    
+    public async Task UpdateUserRolesAsync(UserEntity user, List<Guid> newRoleGuids)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        
+        var existingRoles = await context.UserRoles
+            .Where(ur => ur.UserId == user.Id)
+            .ToListAsync();
+        
+        if (existingRoles.Any())
+            context.UserRoles.RemoveRange(existingRoles);
+        
+        var roleIds = await context.Roles
+            .Where(r => newRoleGuids.Contains(r.ExternalId))
+            .Select(r => r.Id)
+            .ToListAsync();
+        
+        var rolesToAdd = roleIds.Select(id => new UserRoleEntity
+        {
+            UserId = user.Id,
             RoleId = id,
             CreationTime = DateTime.UtcNow,
             ModificationTime = DateTime.UtcNow,
