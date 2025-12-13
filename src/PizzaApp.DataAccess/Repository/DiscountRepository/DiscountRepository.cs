@@ -18,6 +18,16 @@ public class DiscountRepository(IDbContextFactory<PizzaAppDbContext> contextFact
             .FirstOrDefaultAsync(m => m.Id == id);
     }
     
+    public async Task<DiscountEntity?> GetByGuidWithDetailsAsync(Guid guid)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        return await context.Discounts
+            .Include(m => m.Status)
+            .Include(m => m.MenuItems)
+            .ThenInclude(md => md.MenuItem)
+            .FirstOrDefaultAsync(m => m.ExternalId == guid);
+    }
+    
     public async Task<DiscountEntity?> GetByIdWithStatusAsync(int id)
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
@@ -25,6 +35,15 @@ public class DiscountRepository(IDbContextFactory<PizzaAppDbContext> contextFact
         return await context.Discounts
             .Include(d => d.Status)
             .FirstOrDefaultAsync(d => d.Id == id);
+    }
+    
+    public async Task<DiscountEntity?> GetByGuidWithStatusAsync(Guid guid)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        
+        return await context.Discounts
+            .Include(d => d.Status)
+            .FirstOrDefaultAsync(d => d.ExternalId == guid);
     }
     
     public async Task<List<DiscountEntity>> GetAllWithDetailsAsync()
@@ -55,6 +74,16 @@ public class DiscountRepository(IDbContextFactory<PizzaAppDbContext> contextFact
         return await context.Discounts
             .Include(d => d.Status)
             .Where(d => d.StatusId == statusId)
+            .ToListAsync();
+    }
+    
+    public async Task<List<DiscountEntity>> GetDiscountsByStatusGuidAsync(Guid statusGuid)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        
+        return await context.Discounts
+            .Include(d => d.Status)
+            .Where(d => d.Status.ExternalId == statusGuid)
             .ToListAsync();
     }
 
@@ -115,6 +144,13 @@ public class DiscountRepository(IDbContextFactory<PizzaAppDbContext> contextFact
         await using var context = await _contextFactory.CreateDbContextAsync();
         return await context.Discounts.AnyAsync(d => d.StatusId == statusId);
     }
+    public async Task<bool> ExistsStatusAsync(Guid statusGuid)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        return await context.Discounts
+            .Include(d => d.Status)
+            .AnyAsync(d => d.Status.ExternalId == statusGuid);
+    }
     public async Task<List<StatusEntity>> GetAllStatusesAsync()
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
@@ -124,6 +160,22 @@ public class DiscountRepository(IDbContextFactory<PizzaAppDbContext> contextFact
     public async Task UpdateDiscountStatusAsync(DiscountEntity discount, int statusId)
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
+
+        discount.StatusId = statusId;
+        discount.Status = await context.Statuses.FindAsync(statusId);
+
+        context.Discounts.Update(discount);
+        await context.SaveChangesAsync();
+    }
+    
+    public async Task UpdateDiscountStatusAsync(DiscountEntity discount, Guid statusGuid)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        
+        var statusId = await context.Statuses
+            .Where(s => s.ExternalId == statusGuid)
+            .Select(s => s.Id)
+            .FirstOrDefaultAsync();
 
         discount.StatusId = statusId;
         discount.Status = await context.Statuses.FindAsync(statusId);
