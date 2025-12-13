@@ -31,6 +31,19 @@ public class Repository<T>(IDbContextFactory<PizzaAppDbContext> contextFactory) 
         await using var context = await _contextFactory.CreateDbContextAsync();
         return await context.Set<T>().FirstOrDefaultAsync(x => x.Id == id);
     }
+    
+    public T? GetByGuid(Guid guid)
+    {
+        using var context = _contextFactory.CreateDbContext();
+        return context.Set<T>().FirstOrDefault(x => x.ExternalId == guid);
+    }
+    
+    public async Task<T?> GetByGuidAsync(Guid guid)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        return await context.Set<T>().FirstOrDefaultAsync(x => x.ExternalId == guid);
+    }
+    
 
     public T Save(T entity)
     {
@@ -108,6 +121,34 @@ public class Repository<T>(IDbContextFactory<PizzaAppDbContext> contextFactory) 
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
         var entity = await context.Set<T>().FindAsync(id);
+        if (entity == null)
+        {
+            return false;
+        }
+
+        context.Set<T>().Remove(entity);
+        var affectedRows = await context.SaveChangesAsync();
+        return affectedRows > 0;
+    }
+    
+    public bool Delete(Guid guid)
+    {
+        using var context =  _contextFactory.CreateDbContext();
+        var entity = context.Set<T>().Find(guid);
+        if (entity == null)
+        {
+            return false;
+        }
+
+        context.Set<T>().Remove(entity);
+        var affectedRows = context.SaveChanges();
+        return affectedRows > 0;
+    }
+    
+    public async Task<bool> DeleteAsync(Guid guid)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        var entity = await context.Set<T>().FindAsync(guid);
         if (entity == null)
         {
             return false;
