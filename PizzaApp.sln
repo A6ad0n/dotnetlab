@@ -6,9 +6,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzaApp.DataAccess", "src\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzaApp.BL", "src\PizzaApp.BL\PizzaApp.BL.csproj", "{4C3FBDB6-CC94-4553-800A-A95EC6D5A4BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzaApp.BL.UnitTests", "src\PizzaApp.BL.UnitTests\PizzaApp.BL.UnitTests.csproj", "{8C1DBD3E-273E-422F-BF75-8CF209D63B05}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzaApp.BL.UnitTests", "src\tests\PizzaApp.BL.UnitTests\PizzaApp.BL.UnitTests.csproj", "{8C1DBD3E-273E-422F-BF75-8CF209D63B05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzaApp.WebApi.Tests", "src\PizzaApp.WebApi.Tests\PizzaApp.WebApi.Tests.csproj", "{77B6D200-98CC-4C05-8D7B-042CF8F11414}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzaApp.WebApi.Tests", "src\tests\PizzaApp.WebApi.Tests\PizzaApp.WebApi.Tests.csproj", "{77B6D200-98CC-4C05-8D7B-042CF8F11414}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
