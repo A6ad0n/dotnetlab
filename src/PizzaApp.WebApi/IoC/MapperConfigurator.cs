@@ -19,6 +19,12 @@ public static class MapperConfigurator
             
             config.AddProfile<DiscountBLProfile>();
             config.AddProfile<DiscountServiceProfile>();
+            
+            config.AddProfile<CategoryBLProfile>();
+            config.AddProfile<CategoryServiceProfile>();
+            
+            config.AddProfile<StatusBLProfile>();
+            config.AddProfile<StatusServiceProfile>();
         });
     }
 }
