@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.OpenApi.Models;
 
 namespace PizzaApp.WebApi.IoC
@@ -6,6 +8,22 @@ namespace PizzaApp.WebApi.IoC
     {
         public static void ConfigureServices(IServiceCollection services)
         {
+            services.AddApiVersioning(options =>
+            {
+                options.DefaultApiVersion = new ApiVersion(1, 0);
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.ReportApiVersions = true;
+                options.ApiVersionReader = ApiVersionReader.Combine(
+                    new UrlSegmentApiVersionReader()
+                );
+            });
+
+            services.AddVersionedApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'VV";
+                options.SubstituteApiVersionInUrl = false;
+            });
+            
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(options =>
             {
@@ -33,13 +51,33 @@ namespace PizzaApp.WebApi.IoC
                         Array.Empty<string>()
                     }
                 });
+                
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "PizzaApp API v1",
+                    Version = "v1",
+                    Description = "API with integer ID"
+                });
+                
+                options.SwaggerDoc("v2", new OpenApiInfo
+                {
+                    Title = "PizzaApp API v2",
+                    Version = "v2",
+                    Description = "API with GUID ID"
+                });
+                
+                options.EnableAnnotations();
             });
         }
 
         public static void ConfigureApplication(IApplicationBuilder app)
         {
             app.UseSwagger();
-            app.UseSwaggerUI();
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "PizzaApp API v1");
+                options.SwaggerEndpoint("/swagger/v2/swagger.json", "PizzaApp API v2");
+            });
         }
     }
 }
