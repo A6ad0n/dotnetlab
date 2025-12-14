@@ -1,3 +1,4 @@
+using Duende.IdentityServer.Extensions;
 using FluentValidation;
 using PizzaApp.BL.Features.Menu.DTOs;
 
@@ -24,8 +25,20 @@ public class CreateMenuItemModelValidator : AbstractValidator<CreateMenuItemMode
 
         RuleFor(x => x.CategoryId)
             .GreaterThan(0).WithMessage("CategoryId must be a positive integer.");
+        
+        RuleFor(x => x)
+            .Must(x => x.CategoryId.HasValue ^ x.CategoryExternalId.HasValue)
+            .WithMessage("Только одно из полей CategoryId или CategoryExternalId должно быть заполнено");
 
         RuleFor(x => x.StatusId)
             .GreaterThan(0).WithMessage("StatusId must be a positive integer.");
+        
+        RuleFor(x => x)
+            .Must(x => x.StatusId.HasValue ^ x.StatusExternalId.HasValue)
+            .WithMessage("Только одно из полей StatusId или StatusExternalId должно быть заполнено");
+        
+        RuleFor(x => x)
+            .Must(x => !x.DiscountIds.IsNullOrEmpty() ^ !x.DiscountExternalIds.IsNullOrEmpty())
+            .WithMessage("Только одно из полей DiscountIds или DiscountExternalIds должно быть заполнено");
     }
 }

@@ -142,7 +142,7 @@ public class MenuManager(IMenuItemRepository menuItemRepository, IMapper mapper,
             throw new BusinessLogicException<MenuResultCode>(MenuResultCode.MenuItemUpdateFailure, "Failed to update menuItem block information");
         }
     }
-
+    
     public async Task<MenuItemModel> ChangeMenuItemDiscountsAsync(int menuItemId, List<int> discountIds)
     {
         var menuItem = await menuItemRepository.GetByIdWithDiscountsAsync(menuItemId)
@@ -177,8 +177,61 @@ public class MenuManager(IMenuItemRepository menuItemRepository, IMapper mapper,
         }
     }
     
+    public async Task<MenuItemModel> UpdateMenuItemAsync(Guid menuItemGuid, UpdateMenuItemModel model)
+    {
+        var menuItem = await menuItemRepository.GetByGuidWithDetailsAsync(menuItemGuid) ?? 
+                   throw new BusinessLogicException<MenuResultCode>(MenuResultCode.MenuItemNotFound);
+        return await UpdateMenuItemAsync(menuItem.Id, model);
+    }
+
+    public async Task<MenuItemModel> ChangeMenuItemCategoryAsync(Guid menuItemGuid, Guid categoryGuid)
+    {
+        var menuItem = await menuItemRepository.GetByGuidWithDetailsAsync(menuItemGuid) ??
+                   throw new BusinessLogicException<MenuResultCode>(MenuResultCode.MenuItemNotFound);
+        var categories = await menuItemRepository.GetAllCategoriesAsync();
+        var category = categories.FirstOrDefault(c => c.ExternalId == categoryGuid);
+        if (category == null)
+        {
+            throw new BusinessLogicException<MenuResultCode>(MenuResultCode.CategoryNotFound);
+        }
+
+        return await ChangeMenuItemCategoryAsync(menuItem.Id, category.Id);
+    }
+    
+    public async Task<MenuItemModel> ChangeMenuItemStatusAsync(Guid menuItemGuid, Guid statusGuid)
+    {
+        var menuItem = await menuItemRepository.GetByGuidWithDetailsAsync(menuItemGuid) ??
+                       throw new BusinessLogicException<MenuResultCode>(MenuResultCode.MenuItemNotFound);
+        var statuses = await menuItemRepository.GetAllStatusesAsync();
+        var status = statuses.FirstOrDefault(s => s.ExternalId == statusGuid);
+        if (status == null)
+        {
+            throw new BusinessLogicException<MenuResultCode>(MenuResultCode.StatusNotFound);
+        }
+        
+        return await ChangeMenuItemStatusAsync(menuItem.Id, status.Id);
+    }
+    
+    public async Task<MenuItemModel> ChangeMenuItemDiscountsAsync(Guid menuItemGuid, List<Guid> discountGuids)
+    {
+        var menuItem = await menuItemRepository.GetByGuidWithDiscountsAsync(menuItemGuid)
+                   ?? throw new BusinessLogicException<MenuResultCode>(MenuResultCode.MenuItemNotFound);
+        var discounts = await menuItemRepository.GetAllDiscountsAsync();
+        var discountIds = discounts
+            .Where(d => discountGuids.Contains(d.ExternalId))
+            .Select(d => d.Id)
+            .ToList();
+        
+        return await ChangeMenuItemDiscountsAsync(menuItem.Id, discountIds);
+    }
+    
     public async Task<bool> DeleteMenuItemAsync(int menuItemId)
     {
         return await menuItemRepository.DeleteAsync(menuItemId);
+    }
+    
+    public async Task<bool> DeleteMenuItemAsync(Guid menuItemGuid)
+    {
+        return await menuItemRepository.DeleteAsync(menuItemGuid);
     }
 }
