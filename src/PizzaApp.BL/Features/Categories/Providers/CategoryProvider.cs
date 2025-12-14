@@ -16,6 +16,14 @@ public class CategoryProvider(ICategoryRepository menuItemRepository, IMapper ma
         return mapper.Map<CategoryModel>(discount);
     }
     
+    public async Task<CategoryModel> GetByGuidAsync(Guid guid)
+    {
+        var discount = await menuItemRepository.GetByGuidWithDetailsAsync(guid) ??
+                       throw new BusinessLogicException<CategoryResultCode>(CategoryResultCode.CategoryNotFound);
+        
+        return mapper.Map<CategoryModel>(discount);
+    }
+    
     public async Task<List<CategoryModel>> GetAllAsync()
     {
         var discounts = await menuItemRepository.GetAllWithDetailsAsync();
