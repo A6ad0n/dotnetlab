@@ -14,7 +14,6 @@ public class UserServiceProfile : Profile
             .ForMember(dest => dest.Roles, opt => opt.Ignore());
         CreateMap<v1.UpdateUserRequest, UpdateUserModel>();
         CreateMap<v1.ChangeUserBlockInfoRequest, BlockInformationModel>();
-        CreateMap<v1.ChangeUserRolesRequest, UpdateUserRolesModel>();
         CreateMap<List<UserModel>, v1.UserListResponse>()
             .ForMember(d => d.Users, opt => 
                 opt.MapFrom(src => src));

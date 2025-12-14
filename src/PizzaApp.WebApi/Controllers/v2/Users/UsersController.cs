@@ -75,7 +75,7 @@ public class UsersController(
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> ChangeUserRole([FromRoute] int id, [FromBody] ChangeUserRolesRequest request)
     {
-        var userModel = await usersManager.ChangeUserRolesAsync(id, mapper.Map<UpdateUserRolesModel>(request));
+        var userModel = await usersManager.ChangeUserRolesAsync(id, request.RoleIds);
         return Ok(userModel);
     }
     
