@@ -145,6 +145,11 @@ public class UsersManager(IUserRepository userRepository, IMapper mapper, ILogge
             .Where(r => roleGuids.Contains(r.ExternalId))
             .Select(r => r.Id)
             .ToList();
+
+        if (roleGuids.Count != roleIds.Count)
+        {
+            throw new BusinessLogicException<UserResultCode>(UserResultCode.RolesNotFound);
+        }
         
         return await ChangeUserRolesAsync(user.Id, roleIds);
     }

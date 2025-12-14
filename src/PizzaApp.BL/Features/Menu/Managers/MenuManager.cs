@@ -222,6 +222,11 @@ public class MenuManager(IMenuItemRepository menuItemRepository, IMapper mapper,
             .Select(d => d.Id)
             .ToList();
         
+        if (discountGuids.Count != discountIds.Count)
+        {
+            throw new BusinessLogicException<MenuResultCode>(MenuResultCode.DiscountsNotFound);
+        }
+        
         return await ChangeMenuItemDiscountsAsync(menuItem.Id, discountIds);
     }
     
