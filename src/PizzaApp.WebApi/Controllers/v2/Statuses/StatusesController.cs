@@ -25,10 +25,10 @@ public class StatusesController(
     }
 
     [HttpGet]
-    [Route("{id:int}")]
-    public async Task<IActionResult> GetStatusById([FromRoute] int id)
+    [Route("{id:guid}")]
+    public async Task<IActionResult> GetStatusById([FromRoute] Guid id)
     {
-        var statusModel = await statusProvider.GetByIdAsync(id);
+        var statusModel = await statusProvider.GetByGuidAsync(id);
         return Ok(statusModel);
     }
 }

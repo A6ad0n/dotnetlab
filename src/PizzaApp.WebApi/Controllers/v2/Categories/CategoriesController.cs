@@ -25,10 +25,10 @@ public class CategoriesController(
     }
 
     [HttpGet]
-    [Route("{id:int}")]
-    public async Task<IActionResult> GetCategoryById([FromRoute] int id)
+    [Route("{id:guid}")]
+    public async Task<IActionResult> GetCategoryById([FromRoute] Guid id)
     {
-        var categoryModel = await categoryProvider.GetByIdAsync(id);
+        var categoryModel = await categoryProvider.GetByGuidAsync(id);
         return Ok(categoryModel);
     }
 }
