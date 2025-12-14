@@ -103,50 +103,9 @@ public class DiscountManager(IDiscountRepository discountRepository, IMapper map
     
     public async Task<DiscountModel> UpdateDiscountAsync(Guid discountGuid, UpdateDiscountModel model)
     {
-        var validationResult = await new UpdateDiscountModelValidator().ValidateAsync(model);
-        if (!validationResult.IsValid)
-        {
-            var errors = validationResult.Errors.Select(x => x.ErrorMessage);
-            var stringBuilder = new StringBuilder();
-            foreach (var error in errors)
-                stringBuilder.AppendLine(error);
-            throw new BusinessLogicException<DiscountResultCode>(DiscountResultCode.DiscountValidationFailure,
-                stringBuilder.ToString());
-        }
-        
         var discount = await discountRepository.GetByGuidWithDetailsAsync(discountGuid) ?? 
                        throw new BusinessLogicException<DiscountResultCode>(DiscountResultCode.DiscountNotFound);
-        if (!string.IsNullOrWhiteSpace(model.Name))
-        {
-            discount.Name = model.Name;
-        }
-        if (!string.IsNullOrWhiteSpace(model.Description))
-        {
-            discount.Description = model.Description;
-        }
-        if (model.ValidFrom != null && model.ValidFrom < discount.ValidTo)
-        {
-            discount.ValidFrom = model.ValidFrom.Value;
-        }
-        if (model.ValidTo != null && model.ValidTo > discount.ValidFrom)
-        {
-            discount.ValidTo = model.ValidTo.Value;
-        }
-        if (model.DiscountPercentage is > 0.0m and <= 100.0m)
-        {
-            discount.DiscountPercentage  = model.DiscountPercentage.Value;
-        }
-
-        try
-        {
-            var updatedDiscount = await discountRepository.SaveAsync(discount);
-            return mapper.Map<DiscountModel>(updatedDiscount);
-        }
-        catch (Exception e)
-        {
-            logger.LogError(e.Message);
-            throw new BusinessLogicException<DiscountResultCode>(DiscountResultCode.DiscountUpdateFailure);
-        }
+        return await UpdateDiscountAsync(discount.Id, model);
     }
 
     
@@ -180,26 +139,14 @@ public class DiscountManager(IDiscountRepository discountRepository, IMapper map
     {
         var discount = await discountRepository.GetByGuidWithDetailsAsync(discountGuid) ??
                        throw new BusinessLogicException<DiscountResultCode>(DiscountResultCode.DiscountNotFound);
-        var isStatusExist = await discountRepository.ExistsStatusAsync(statusGuid);
-
-        if (!isStatusExist)
+        var statuses = await discountRepository.GetAllStatusesAsync();
+        var status = statuses.FirstOrDefault(s => s.ExternalId == statusGuid);
+        if (status == null)
         {
             throw new BusinessLogicException<DiscountResultCode>(DiscountResultCode.StatusNotFound);
         }
-
-        try
-        {
-            await discountRepository.UpdateDiscountStatusAsync(discount, statusGuid);
-
-            var updatedDiscount = await discountRepository.GetByGuidWithDetailsAsync(discountGuid);
-            return mapper.Map<DiscountModel>(updatedDiscount);
-        }
-        catch (Exception e)
-        {
-            logger.LogError(e.Message);
-            throw new BusinessLogicException<DiscountResultCode>(DiscountResultCode.DiscountUpdateFailure,
-                "Failed to update discount block information");
-        }
+        
+        return await ChangeDiscountStatusAsync(discount.Id, status.Id);
     }
 
     public async Task<bool> DeleteDiscountAsync(int discountId)

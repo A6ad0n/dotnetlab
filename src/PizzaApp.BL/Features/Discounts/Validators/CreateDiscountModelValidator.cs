@@ -8,7 +8,7 @@ public class CreateDiscountModelValidator : AbstractValidator<CreateDiscountMode
     public CreateDiscountModelValidator()
     {
         RuleFor(x => x)
-            .Must(x => x.StatusId.HasValue || x.StatusExternalId.HasValue)
-            .WithMessage("Хотя бы одно из полей StatusId или StatusExternalId должно быть заполнено");
+            .Must(x => x.StatusId.HasValue ^ x.StatusExternalId.HasValue)
+            .WithMessage("Только одно из полей StatusId или StatusExternalId должно быть заполнено");
     }
 }
