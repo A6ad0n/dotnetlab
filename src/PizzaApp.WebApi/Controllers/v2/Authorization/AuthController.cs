@@ -8,7 +8,8 @@ using PizzaApp.WebApi.Controllers.v2.Users.DTOs;
 namespace PizzaApp.WebApi.Controllers.v2.Authorization;
 
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("api/v2/[controller]")]
+[ApiVersion("2.0")]
 public class AuthController(IAuthManager authManager, IMapper mapper, ILogger<AuthController> logger)
     : ControllerBase
 {

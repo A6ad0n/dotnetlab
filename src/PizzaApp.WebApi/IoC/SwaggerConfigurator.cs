@@ -1,6 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace PizzaApp.WebApi.IoC
 {
@@ -10,7 +14,7 @@ namespace PizzaApp.WebApi.IoC
         {
             services.AddApiVersioning(options =>
             {
-                options.DefaultApiVersion = new ApiVersion(1, 0);
+                options.DefaultApiVersion = new ApiVersion(2, 0);
                 options.AssumeDefaultVersionWhenUnspecified = true;
                 options.ReportApiVersions = true;
                 options.ApiVersionReader = ApiVersionReader.Combine(
@@ -21,7 +25,7 @@ namespace PizzaApp.WebApi.IoC
             services.AddVersionedApiExplorer(options =>
             {
                 options.GroupNameFormat = "'v'VVV";
-                options.SubstituteApiVersionInUrl = false;
+                options.SubstituteApiVersionInUrl = true;
             });
             
             services.AddEndpointsApiExplorer();
@@ -66,6 +70,8 @@ namespace PizzaApp.WebApi.IoC
                     Description = "API with GUID ID"
                 });
                 
+                options.CustomSchemaIds(type => type.FullName);
+                
                 options.EnableAnnotations();
             });
         }
@@ -77,6 +83,8 @@ namespace PizzaApp.WebApi.IoC
             {
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "PizzaApp API v1");
                 options.SwaggerEndpoint("/swagger/v2/swagger.json", "PizzaApp API v2");
+                
+                options.DisplayRequestDuration();
             });
         }
     }

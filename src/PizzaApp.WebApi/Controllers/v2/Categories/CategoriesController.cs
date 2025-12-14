@@ -7,7 +7,8 @@ using PizzaApp.WebApi.Controllers.v2.Categories.DTOs;
 namespace PizzaApp.WebApi.Controllers.v2.Categories;
 
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("api/v2/[controller]")]
+[ApiVersion("2.0")]
 public class CategoriesController(
     ICategoryProvider categoryProvider,
     IMapper mapper,

@@ -10,7 +10,8 @@ using PizzaApp.WebApi.Controllers.v2.Menu.DTOs;
 namespace PizzaApp.WebApi.Controllers.v2.Menu;
 
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("api/v2/[controller]")]
+[ApiVersion("2.0")]
 public class MenuController(
     IMenuProvider menuProvider,
     IMenuManager menuManager,

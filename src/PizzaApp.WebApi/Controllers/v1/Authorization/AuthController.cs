@@ -9,6 +9,7 @@ namespace PizzaApp.WebApi.Controllers.v1.Authorization;
 
 [ApiController]
 [Route("api/v1/[controller]")]
+[ApiVersion("1.0")]
 public class AuthController(IAuthManager authManager, IMapper mapper, ILogger<AuthController> logger)
     : ControllerBase
 {

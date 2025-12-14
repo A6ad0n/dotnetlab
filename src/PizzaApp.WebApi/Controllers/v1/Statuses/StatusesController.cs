@@ -8,8 +8,9 @@ namespace PizzaApp.WebApi.Controllers.v1.Statuses;
 
 [ApiController]
 [Route("api/v1/[controller]")]
+[ApiVersion("1.0")]
 public class StatusesController(
-    IStatusProvider discountProvider,
+    IStatusProvider statusProvider,
     IMapper mapper,
     ILogger<StatusesController> logger)
     : ControllerBase
@@ -18,16 +19,16 @@ public class StatusesController(
     [Route("")]
     public async Task<IActionResult> GetStatuses()
     {
-        var discountModels = await discountProvider.GetAllAsync();
-        if (discountModels.IsNullOrEmpty()) return NotFound();
-        return Ok(mapper.Map<StatusListResponse>(discountModels));
+        var statusModels = await statusProvider.GetAllAsync();
+        if (statusModels.IsNullOrEmpty()) return NotFound();
+        return Ok(mapper.Map<StatusListResponse>(statusModels));
     }
 
     [HttpGet]
     [Route("{id:int}")]
     public async Task<IActionResult> GetStatusById([FromRoute] int id)
     {
-        var discountModel = await discountProvider.GetByIdAsync(id);
-        return Ok(discountModel);
+        var statusModel = await statusProvider.GetByIdAsync(id);
+        return Ok(statusModel);
     }
 }

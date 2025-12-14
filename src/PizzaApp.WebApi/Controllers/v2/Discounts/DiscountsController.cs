@@ -10,7 +10,8 @@ using PizzaApp.WebApi.Controllers.v2.Discounts.DTOs;
 namespace PizzaApp.WebApi.Controllers.v2.Discounts;
 
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("api/v2/[controller]")]
+[ApiVersion("2.0")]
 public class DiscountsController(
     IDiscountProvider discountProvider,
     IDiscountManager discountManager,

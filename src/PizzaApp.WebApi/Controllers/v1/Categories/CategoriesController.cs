@@ -8,8 +8,9 @@ namespace PizzaApp.WebApi.Controllers.v1.Categories;
 
 [ApiController]
 [Route("api/v1/[controller]")]
+[ApiVersion("1.0")]
 public class CategoriesController(
-    ICategoryProvider discountProvider,
+    ICategoryProvider categoryProvider,
     IMapper mapper,
     ILogger<CategoriesController> logger)
     : ControllerBase
@@ -18,16 +19,16 @@ public class CategoriesController(
     [Route("")]
     public async Task<IActionResult> GetCategories()
     {
-        var discountModels = await discountProvider.GetAllAsync();
-        if (discountModels.IsNullOrEmpty()) return NotFound();
-        return Ok(mapper.Map<CategoryListResponse>(discountModels));
+        var categoryModels = await categoryProvider.GetAllAsync();
+        if (categoryModels.IsNullOrEmpty()) return NotFound();
+        return Ok(mapper.Map<CategoryListResponse>(categoryModels));
     }
 
     [HttpGet]
     [Route("{id:int}")]
     public async Task<IActionResult> GetCategoryById([FromRoute] int id)
     {
-        var discountModel = await discountProvider.GetByIdAsync(id);
-        return Ok(discountModel);
+        var categoryModel = await categoryProvider.GetByIdAsync(id);
+        return Ok(categoryModel);
     }
 }

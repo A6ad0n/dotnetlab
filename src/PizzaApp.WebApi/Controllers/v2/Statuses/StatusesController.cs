@@ -7,7 +7,8 @@ using PizzaApp.WebApi.Controllers.v2.Statuses.DTOs;
 namespace PizzaApp.WebApi.Controllers.v2.Statuses;
 
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("api/v2/[controller]")]
+[ApiVersion("2.0")]
 public class StatusesController(
     IStatusProvider statusProvider,
     IMapper mapper,
