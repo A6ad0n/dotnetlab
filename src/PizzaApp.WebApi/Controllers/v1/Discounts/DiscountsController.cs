@@ -64,11 +64,11 @@ public class DiscountsController(
     }
     
     [HttpPatch]
-    [Route("{id:int}/edit/status/{statusId:int}")]
+    [Route("{id:int}/edit/status/")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> ChangeDiscountStatus([FromRoute] int id, [FromRoute] int statusId)
+    public async Task<IActionResult> ChangeDiscountStatus([FromRoute] int id, [FromBody] ChangeDiscountStatusRequest request)
     {
-        var discountModel = await discountManager.ChangeDiscountStatusAsync(id, statusId);
+        var discountModel = await discountManager.ChangeDiscountStatusAsync(id, request.StatusId);
         return Ok(discountModel);
     }
 }

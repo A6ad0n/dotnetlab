@@ -66,27 +66,27 @@ public class MenuController(
     [HttpPatch]
     [Route("{id:int}/edit/discounts")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> ChangeMenuItemDiscounts([FromRoute] int id, [FromBody] List<int> discountIds)
+    public async Task<IActionResult> ChangeMenuItemDiscounts([FromRoute] int id, [FromBody] ChangeMenuItemDiscountsRequest request)
     {
-        var menuItemModel = await menuManager.ChangeMenuItemDiscountsAsync(id, discountIds);
+        var menuItemModel = await menuManager.ChangeMenuItemDiscountsAsync(id, request.DiscountIds);
         return Ok(menuItemModel);
     }
     
     [HttpPatch]
-    [Route("{id:int}/edit/category{categoryId:int}")]
+    [Route("{id:int}/edit/category")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> ChangeMenuItemCategory([FromRoute] int id, [FromRoute] int categoryId)
+    public async Task<IActionResult> ChangeMenuItemCategory([FromRoute] int id, [FromBody] ChangeMenuItemCategoryRequest request)
     {
-        var menuItemModel = await menuManager.ChangeMenuItemCategoryAsync(id, categoryId);
+        var menuItemModel = await menuManager.ChangeMenuItemCategoryAsync(id, request.CategoryId);
         return Ok(menuItemModel);
     }
     
     [HttpPatch]
-    [Route("{id:int}/edit/status{statusId:int}")]
+    [Route("{id:int}/edit/status")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> ChangeMenuItemStatus([FromRoute] int id, [FromRoute] int statusId)
+    public async Task<IActionResult> ChangeMenuItemStatus([FromRoute] int id, [FromBody] ChangeMenuItemStatusRequest request)
     {
-        var menuItemModel = await menuManager.ChangeMenuItemStatusAsync(id, statusId);
+        var menuItemModel = await menuManager.ChangeMenuItemStatusAsync(id, request.StatusId);
         return Ok(menuItemModel);
     }
 }
