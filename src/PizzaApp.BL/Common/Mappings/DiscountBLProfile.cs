@@ -21,10 +21,18 @@ public class DiscountBLProfile : Profile
         CreateMap<DiscountEntity, DiscountModel>()
             .ForMember(d => d.Status, opt =>
                 opt.MapFrom(s => s.Status));
-        
+
         CreateMap<CreateDiscountModel, DiscountEntity>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
-            .ForMember(dest => dest.Status, opt => opt.Ignore());  
+            .ForMember(dest => dest.Status, opt => opt.Ignore())
+            .ForMember(dest => dest.ValidFrom, opt => opt.MapFrom(src =>
+                src.ValidFrom.Kind == DateTimeKind.Unspecified
+                    ? DateTime.SpecifyKind(src.ValidFrom, DateTimeKind.Utc)
+                    : src.ValidFrom.ToUniversalTime()))
+            .ForMember(dest => dest.ValidTo, opt => opt.MapFrom(src =>
+                src.ValidTo.Kind == DateTimeKind.Unspecified
+                    ? DateTime.SpecifyKind(src.ValidTo, DateTimeKind.Utc)
+                    : src.ValidTo.ToUniversalTime()));
 
     }
 }
