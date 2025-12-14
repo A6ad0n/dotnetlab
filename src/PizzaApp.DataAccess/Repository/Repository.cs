@@ -123,7 +123,9 @@ public class Repository<T>(IDbContextFactory<PizzaAppDbContext> contextFactory) 
     public bool Delete(Guid guid)
     {
         using var context =  _contextFactory.CreateDbContext();
-        var entity = context.Set<T>().Find(guid);
+        var entity = context.Set<T>()
+            .FirstOrDefault(e => e.ExternalId == guid);
+    
         if (entity == null)
         {
             return false;
@@ -137,7 +139,9 @@ public class Repository<T>(IDbContextFactory<PizzaAppDbContext> contextFactory) 
     public async Task<bool> DeleteAsync(Guid guid)
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
-        var entity = await context.Set<T>().FindAsync(guid);
+        var entity = await context.Set<T>()
+            .FirstOrDefaultAsync(e => e.ExternalId == guid);
+    
         if (entity == null)
         {
             return false;
