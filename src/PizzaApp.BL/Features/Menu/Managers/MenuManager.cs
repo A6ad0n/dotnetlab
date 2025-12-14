@@ -1,5 +1,6 @@
 using System.Text;
 using AutoMapper;
+using Duende.IdentityServer.Extensions;
 using Microsoft.Extensions.Logging;
 using PizzaApp.BL.Common.Exceptions;
 using PizzaApp.BL.Features.Menu.DTOs;
@@ -28,25 +29,76 @@ public class MenuManager(IMenuItemRepository menuItemRepository, IMapper mapper,
         }
         
         var menuItem = mapper.Map<MenuItemEntity>(model);
-
-        var isCategoryExist = await menuItemRepository.ExistsCategoryAsync(menuItem.CategoryId);
-        if (!isCategoryExist)
+        
+        if (model.CategoryExternalId.HasValue)
         {
-            throw new BusinessLogicException<MenuResultCode>(MenuResultCode.CategoryNotFound);
+            var categories = await menuItemRepository.GetAllCategoriesAsync();
+            var category = categories
+                .FirstOrDefault(s => s.ExternalId == model.CategoryExternalId.Value);
+            
+            if (category == null)
+            {
+                throw new BusinessLogicException<MenuResultCode>(MenuResultCode.CategoryNotFound);
+            }
+            menuItem.CategoryId = category.Id;
         }
-        var isStatusExist = await menuItemRepository.ExistsStatusAsync(menuItem.StatusId);
-        if (!isStatusExist)
+        else
         {
-            throw new BusinessLogicException<MenuResultCode>(MenuResultCode.StatusNotFound);
+            var isCategoryExist = await menuItemRepository.ExistsCategoryAsync(menuItem.CategoryId);
+            if (!isCategoryExist)
+            {
+                throw new BusinessLogicException<MenuResultCode>(MenuResultCode.CategoryNotFound);
+            }
         }
 
-        if (model.DiscountIds != null)
+        if (model.StatusExternalId.HasValue)
         {
-            await menuItemRepository.SaveWithDiscountsAsync(menuItem, model.DiscountIds);
+            var statuses = await menuItemRepository.GetAllStatusesAsync();
+            var status = statuses.FirstOrDefault(s => s.ExternalId == model.StatusExternalId.Value);
+            
+            if (status == null)
+            {
+                throw new BusinessLogicException<MenuResultCode>(MenuResultCode.StatusNotFound);
+            }
+            menuItem.StatusId = status.Id;
+        }
+        else
+        {
+            var isStatusExist = await menuItemRepository.ExistsStatusAsync(menuItem.StatusId);
+            if (!isStatusExist)
+            {
+                throw new BusinessLogicException<MenuResultCode>(MenuResultCode.StatusNotFound);
+            }
         }
 
-        var newMenuItem = await menuItemRepository.GetByIdWithDetailsAsync(menuItem.Id);
-        return mapper.Map<MenuItemModel>(newMenuItem);
+        bool wasSaved = false;
+        MenuItemEntity updatedMenuItem = null;
+        try
+        {
+            if (!model.DiscountIds.IsNullOrEmpty())
+            {
+                updatedMenuItem = await menuItemRepository.SaveWithDiscountsAsync(menuItem, model.DiscountIds);
+                wasSaved = true;
+            }
+            else if (!model.DiscountExternalIds.IsNullOrEmpty())
+            {
+                updatedMenuItem = await menuItemRepository.SaveWithDiscountsAsync(menuItem, model.DiscountExternalIds);
+                wasSaved = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+            throw new BusinessLogicException<MenuResultCode>(MenuResultCode.DiscountsNotFound, ex.Message);
+        }
+
+        if (!wasSaved)
+        {
+            updatedMenuItem = await menuItemRepository.SaveAsync(menuItem);
+        }
+
+        var result = await menuItemRepository.GetByIdWithDetailsAsync(updatedMenuItem!.Id);
+        return mapper.Map<MenuItemModel>(result);
     }
 
     public async Task<MenuItemModel> UpdateMenuItemAsync(int menuItemId, UpdateMenuItemModel model)
@@ -114,7 +166,7 @@ public class MenuManager(IMenuItemRepository menuItemRepository, IMapper mapper,
         catch (Exception e)
         {
             logger.LogError(e.Message);
-            throw new BusinessLogicException<MenuResultCode>(MenuResultCode.MenuItemUpdateFailure, "Failed to update menuItem block information");
+            throw new BusinessLogicException<MenuResultCode>(MenuResultCode.MenuItemUpdateFailure, "Failed to update menuItem category");
         }
     }
     
@@ -139,7 +191,7 @@ public class MenuManager(IMenuItemRepository menuItemRepository, IMapper mapper,
         catch (Exception e)
         {
             logger.LogError(e.Message);
-            throw new BusinessLogicException<MenuResultCode>(MenuResultCode.MenuItemUpdateFailure, "Failed to update menuItem block information");
+            throw new BusinessLogicException<MenuResultCode>(MenuResultCode.MenuItemUpdateFailure, "Failed to update menuItem status");
         }
     }
     

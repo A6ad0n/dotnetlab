@@ -44,7 +44,8 @@ public class UsersManager(IUserRepository userRepository, IMapper mapper, ILogge
         try
         {
             var updatedUser = await userRepository.SaveAsync(user);
-            return mapper.Map<UserModel>(updatedUser);
+            var result = await userRepository.GetByIdWithDetailsAsync(updatedUser.Id);
+            return mapper.Map<UserModel>(result);
         }
         catch (Exception e)
         {

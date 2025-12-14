@@ -50,7 +50,8 @@ public class DiscountManager(IDiscountRepository discountRepository, IMapper map
         }
 
         var newDiscount = await discountRepository.SaveAsync(discount);
-        return mapper.Map<DiscountModel>(newDiscount);
+        var result = await discountRepository.GetByIdWithStatusAsync(newDiscount.Id);
+        return mapper.Map<DiscountModel>(result);
     }
 
     public async Task<DiscountModel> UpdateDiscountAsync(int discountId, UpdateDiscountModel model)
@@ -131,7 +132,7 @@ public class DiscountManager(IDiscountRepository discountRepository, IMapper map
         {
             logger.LogError(e.Message);
             throw new BusinessLogicException<DiscountResultCode>(DiscountResultCode.DiscountUpdateFailure, 
-                "Failed to update discount block information");
+                "Failed to update discount status");
         }
     }
 

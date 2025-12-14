@@ -19,7 +19,11 @@ public class MenuServiceProfile : Profile
         CreateMap<v2.UpdateMenuItemRequest, UpdateMenuItemModel>();
         CreateMap<v2.CreateMenuItemRequest, CreateMenuItemModel>()
             .ForMember(d => d.StatusExternalId, opt => 
-                opt.MapFrom(src => src.StatusGuid));
+                opt.MapFrom(src => src.StatusGuid))
+            .ForMember(d => d.CategoryExternalId, opt => 
+                opt.MapFrom(src => src.CategoryGuid))
+            .ForMember(d => d.DiscountExternalIds, opt => 
+                opt.MapFrom(src => src.DiscountGuids));
         CreateMap<List<MenuItemModel>, v2.MenuItemListResponse>()
             .ForMember(d => d.MenuItems, opt => 
                 opt.MapFrom(src => src));

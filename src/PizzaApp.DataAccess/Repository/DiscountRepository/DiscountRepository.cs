@@ -160,7 +160,6 @@ public class DiscountRepository(IDbContextFactory<PizzaAppDbContext> contextFact
         await using var context = await _contextFactory.CreateDbContextAsync();
 
         discount.StatusId = statusId;
-        discount.Status = await context.Statuses.FindAsync(statusId);
 
         context.Discounts.Update(discount);
         await context.SaveChangesAsync();
@@ -176,7 +175,6 @@ public class DiscountRepository(IDbContextFactory<PizzaAppDbContext> contextFact
             .FirstOrDefaultAsync();
 
         discount.StatusId = statusId;
-        discount.Status = await context.Statuses.FindAsync(statusId);
 
         context.Discounts.Update(discount);
         await context.SaveChangesAsync();

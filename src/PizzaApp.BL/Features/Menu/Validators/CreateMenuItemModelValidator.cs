@@ -38,7 +38,9 @@ public class CreateMenuItemModelValidator : AbstractValidator<CreateMenuItemMode
             .WithMessage("Только одно из полей StatusId или StatusExternalId должно быть заполнено");
         
         RuleFor(x => x)
-            .Must(x => !x.DiscountIds.IsNullOrEmpty() ^ !x.DiscountExternalIds.IsNullOrEmpty())
+            .Must(x => (!x.DiscountIds.IsNullOrEmpty() && x.DiscountExternalIds.IsNullOrEmpty()) ||
+                       (x.DiscountIds.IsNullOrEmpty() && !x.DiscountExternalIds.IsNullOrEmpty()) ||
+                       (x.DiscountIds.IsNullOrEmpty() && x.DiscountExternalIds.IsNullOrEmpty()))
             .WithMessage("Только одно из полей DiscountIds или DiscountExternalIds должно быть заполнено");
     }
 }
