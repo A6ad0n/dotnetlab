@@ -6,8 +6,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using PizzaApp.BL.Common.Exceptions;
 using PizzaApp.BL.Features.Auth.Exceptions;
+using PizzaApp.BL.Features.Categories.Exceptions;
 using PizzaApp.BL.Features.Discounts.Exceptions;
 using PizzaApp.BL.Features.Menu.Exceptions;
+using PizzaApp.BL.Features.Statuses.Exceptions;
 using PizzaApp.BL.Features.Users.Exceptions;
 
 namespace PizzaApp.WebApi.Middlewares;
@@ -20,67 +22,82 @@ public class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExcep
         {
             await next(context);
         }
-        catch (BusinessLogicException<UserResultCode> ex)
-        {
-            logger.LogWarning(ex, "Business logic exception from PizzaApp.BL.Users: {ExMessage}", ex.Message);
-
-            context.Response.StatusCode = MapStatusCode(ex.ResultCode);
-            context.Response.ContentType = "application/json";
-
-            var payload = new
-            {
-                code = Convert.ToInt32(ex.ResultCode),
-                error = ex.Message
-            };
-
-            await context.Response.WriteAsJsonAsync(payload);
-        }
-        catch (BusinessLogicException<MenuResultCode> ex)
-        {
-            logger.LogWarning(ex, "Business logic exception from PizzaApp.BL.Menu {ExMessage}", ex.Message);
-
-            context.Response.StatusCode = MapStatusCode(ex.ResultCode);
-            context.Response.ContentType = "application/json";
-
-            var payload = new
-            {
-                code = Convert.ToInt32(ex.ResultCode),
-                error = ex.Message
-            };
-
-            await context.Response.WriteAsJsonAsync(payload);
-        }
-        catch (BusinessLogicException<DiscountResultCode> ex)
-        {
-            logger.LogWarning(ex, "Business logic exception from PizzaApp.BL.Users {ExMessage}", ex.Message);
-
-            context.Response.StatusCode = MapStatusCode(ex.ResultCode);
-            context.Response.ContentType = "application/json";
-
-            var payload = new
-            {
-                code = Convert.ToInt32(ex.ResultCode),
-                error = ex.Message
-            };
-
-            await context.Response.WriteAsJsonAsync(payload);
-        }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Unhandled exception {ExMessage}", ex.Message);
-
-            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-            context.Response.ContentType = "application/json";
-
-            var payload = new
-            {
-                code = 0,
-                error = "Unexpected error occurred",
-                detail = ex.Message
-            };
-
-            await context.Response.WriteAsJsonAsync(payload);
+            await HandleExceptionAsync(context, ex);
         }
+    }
+
+    private async Task HandleExceptionAsync(HttpContext context, Exception ex)
+    {
+        switch (ex)
+        {
+            case BusinessLogicException<AuthResultCode> businessEx:
+                await HandleBusinessLogicException(context, businessEx, "PizzaApp.BL.Auth");
+                break;
+            
+            case BusinessLogicException<UserResultCode> businessEx:
+                await HandleBusinessLogicException(context, businessEx, "PizzaApp.BL.Users");
+                break;
+            
+            case BusinessLogicException<CommonResultCode> businessEx:
+                await HandleBusinessLogicException(context, businessEx, "Common resultCode");
+                break;
+            
+            case BusinessLogicException<MenuResultCode> businessEx:
+                await HandleBusinessLogicException(context, businessEx, "PizzaApp.BL.Menu");
+                break;
+            
+            case BusinessLogicException<DiscountResultCode> businessEx:
+                await HandleBusinessLogicException(context, businessEx, "PizzaApp.BL.Discounts");
+                break;
+            
+            case BusinessLogicException<CategoryResultCode> businessEx:
+                await HandleBusinessLogicException(context, businessEx, "PizzaApp.BL.Categories");
+                break;
+            
+            case BusinessLogicException<StatusResultCode> businessEx:
+                await HandleBusinessLogicException(context, businessEx, "PizzaApp.BL.Statuses");
+                break;
+            
+            default:
+                await HandleException(context, ex);
+                break;
+        }
+    }
+    
+    private async Task HandleBusinessLogicException<TResultCode>(HttpContext context, 
+        BusinessLogicException<TResultCode> ex, string source) where TResultCode : Enum
+    {
+        logger.LogWarning(ex, "Business logic exception from {Source}: {ExMessage}", source, ex.Message);
+
+        context.Response.StatusCode = MapStatusCode(ex.ResultCode);
+        context.Response.ContentType = "application/json";
+
+        var payload = new
+        {
+            code = Convert.ToInt32(ex.ResultCode),
+            error = ex.Message
+        };
+
+        await context.Response.WriteAsJsonAsync(payload);
+    }
+    
+    private async Task HandleException(HttpContext context, Exception ex)
+    {
+        logger.LogError(ex, "Unhandled exception {ExMessage}", ex.Message);
+
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/json";
+
+        var payload = new
+        {
+            code = 0,
+            error = "Unexpected error occurred",
+            detail = ex.Message
+        };
+
+        await context.Response.WriteAsJsonAsync(payload);
     }
 
     private static int MapStatusCode(Enum code)
@@ -124,6 +141,11 @@ public class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExcep
             DiscountResultCode.DiscountCreationFailure => StatusCodes.Status500InternalServerError,
             DiscountResultCode.DiscountUpdateFailure => StatusCodes.Status500InternalServerError,
             DiscountResultCode.DiscountValidationFailure => StatusCodes.Status400BadRequest,
+            
+            // CategoryResultCode
+            CategoryResultCode.CategoryNotFound => StatusCodes.Status404NotFound,
+            // StatusResultCode
+            StatusResultCode.StatusNotFound => StatusCodes.Status404NotFound,
             
             _ => StatusCodes.Status400BadRequest
         };
