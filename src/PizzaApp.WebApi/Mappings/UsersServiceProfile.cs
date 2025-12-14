@@ -17,6 +17,9 @@ public class UsersServiceProfile : Profile
         CreateMap<UpdateUserRequest, UpdateUserModel>();
         CreateMap<ChangeUserBlockInfoRequest, BlockInformationModel>();
         CreateMap<AuthorizeUserRequest, AuthorizeUserModel>();
-        CreateMap<ChangeUserRolesRequest, UpdateUserRolesModel>(); 
+        CreateMap<ChangeUserRolesRequest, UpdateUserRolesModel>();
+        CreateMap<List<UserModel>, UserListResponse>()
+            .ForMember(d => d.Users, opt => 
+                opt.MapFrom(src => src));
     }
 }

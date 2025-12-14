@@ -142,14 +142,12 @@ public class DiscountRepository(IDbContextFactory<PizzaAppDbContext> contextFact
     public async Task<bool> ExistsStatusAsync(int statusId)
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
-        return await context.Discounts.AnyAsync(d => d.StatusId == statusId);
+        return await context.Statuses.AnyAsync(s => s.Id == statusId);
     }
     public async Task<bool> ExistsStatusAsync(Guid statusGuid)
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
-        return await context.Discounts
-            .Include(d => d.Status)
-            .AnyAsync(d => d.Status.ExternalId == statusGuid);
+        return await context.Statuses.AnyAsync(s => s.ExternalId == statusGuid);
     }
     public async Task<List<StatusEntity>> GetAllStatusesAsync()
     {

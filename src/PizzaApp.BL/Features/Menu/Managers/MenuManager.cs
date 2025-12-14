@@ -39,8 +39,13 @@ public class MenuManager(IMenuItemRepository menuItemRepository, IMapper mapper,
         {
             throw new BusinessLogicException<MenuResultCode>(MenuResultCode.StatusNotFound);
         }
-        
-        var newMenuItem = await menuItemRepository.SaveWithDiscountsAsync(menuItem, model.DiscountIds);
+
+        if (model.DiscountIds != null)
+        {
+            await menuItemRepository.SaveWithDiscountsAsync(menuItem, model.DiscountIds);
+        }
+
+        var newMenuItem = await menuItemRepository.GetByIdWithDetailsAsync(menuItem.Id);
         return mapper.Map<MenuItemModel>(newMenuItem);
     }
 

@@ -51,7 +51,7 @@ public class UsersController(
     {
         var usersModels =  await usersProvider.GetAllAsync();
         if (usersModels.IsNullOrEmpty()) return NotFound();
-        return Ok(usersModels);
+        return Ok(mapper.Map<UserListResponse>(usersModels));
     }
     
     [HttpGet]
