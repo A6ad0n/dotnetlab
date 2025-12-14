@@ -28,7 +28,7 @@ public class CreateMenuItemModelValidator : AbstractValidator<CreateMenuItemMode
         
         RuleFor(x => x)
             .Must(x => x.CategoryId.HasValue ^ x.CategoryExternalId.HasValue)
-            .WithMessage("Только одно из полей CategoryId или CategoryExternalId должно быть заполнено");
+            .WithMessage("Only one of the fields CategoryId or CategoryExternalId must be filled.");
 
         RuleFor(x => x.StatusId)
             .GreaterThan(0).WithMessage("StatusId must be a positive integer.");
