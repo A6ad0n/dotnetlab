@@ -16,6 +16,14 @@ public class StatusProvider(IStatusRepository menuItemRepository, IMapper mapper
         return mapper.Map<StatusModel>(discount);
     }
     
+    public async Task<StatusModel> GetByGuidAsync(Guid guid)
+    {
+        var discount = await menuItemRepository.GetByGuidWithDetailsAsync(guid) ??
+                       throw new BusinessLogicException<StatusResultCode>(StatusResultCode.StatusNotFound);
+        
+        return mapper.Map<StatusModel>(discount);
+    }
+    
     public async Task<List<StatusModel>> GetAllAsync()
     {
         var discounts = await menuItemRepository.GetAllWithDetailsAsync();
