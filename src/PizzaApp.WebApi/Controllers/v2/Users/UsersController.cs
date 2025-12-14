@@ -8,6 +8,8 @@ using PizzaApp.BL.Features.Users.Entities;
 using PizzaApp.BL.Features.Users.Managers;
 using PizzaApp.BL.Features.Users.Providers;
 using PizzaApp.WebApi.Controllers.v2.Users.DTOs;
+using PizzaApp.WebApi.Controllers.v2.Users.DTOs.Requests;
+using PizzaApp.WebApi.Controllers.v2.Users.DTOs.Responses;
 
 namespace PizzaApp.WebApi.Controllers.v2.Users;
 

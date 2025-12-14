@@ -4,6 +4,7 @@ using PizzaApp.BL.Features.Auth.Entities;
 using PizzaApp.BL.Features.Auth.Managers;
 using PizzaApp.WebApi.Controllers.v2.Authorization.DTOs;
 using PizzaApp.WebApi.Controllers.v2.Users.DTOs;
+using PizzaApp.WebApi.Controllers.v2.Users.DTOs.Requests;
 
 namespace PizzaApp.WebApi.Controllers.v2.Authorization;
 

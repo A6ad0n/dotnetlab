@@ -1,5 +1,5 @@
 
-namespace PizzaApp.WebApi.Controllers.v2.Users.DTOs;
+namespace PizzaApp.WebApi.Controllers.v2.Users.DTOs.Requests;
 
 public class RegisterUserRequest
 {

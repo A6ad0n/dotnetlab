@@ -1,5 +1,6 @@
 using AutoMapper;
 using PizzaApp.BL.Features.Categories.Entities;
+using PizzaApp.WebApi.Controllers.v2.Categories.DTOs.Responses;
 using v1 = PizzaApp.WebApi.Controllers.v1.Categories.DTOs;
 using v2 = PizzaApp.WebApi.Controllers.v2.Categories.DTOs;
 
@@ -13,7 +14,7 @@ public class CategoryServiceProfile : Profile
             .ForMember(d => d.Categories, opt => 
                 opt.MapFrom(src => src));
         
-        CreateMap<List<CategoryModel>, v2.CategoryListResponse>()
+        CreateMap<List<CategoryModel>, CategoryListResponse>()
             .ForMember(d => d.Categories, opt => 
                 opt.MapFrom(src => src));
     }

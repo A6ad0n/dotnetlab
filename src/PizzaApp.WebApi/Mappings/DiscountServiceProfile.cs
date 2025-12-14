@@ -1,6 +1,8 @@
 using AutoMapper;
 using PizzaApp.BL.Features.Discounts.DTOs;
 using PizzaApp.BL.Features.Discounts.Entities;
+using PizzaApp.WebApi.Controllers.v2.Discounts.DTOs.Requests;
+using PizzaApp.WebApi.Controllers.v2.Discounts.DTOs.Responses;
 using v1 = PizzaApp.WebApi.Controllers.v1.Discounts.DTOs;
 using v2 = PizzaApp.WebApi.Controllers.v2.Discounts.DTOs;
 
@@ -15,11 +17,11 @@ public class DiscountServiceProfile : Profile
         CreateMap<List<DiscountModel>, v1.DiscountListResponse>()
             .ForMember(d => d.Discounts, opt => opt.MapFrom(src => src));
         
-        CreateMap<v2.UpdateDiscountRequest, UpdateDiscountModel>();
-        CreateMap<v2.CreateDiscountRequest, CreateDiscountModel>()
+        CreateMap<UpdateDiscountRequest, UpdateDiscountModel>();
+        CreateMap<CreateDiscountRequest, CreateDiscountModel>()
             .ForMember(d => d.StatusExternalId, opt => 
                 opt.MapFrom(src => src.StatusGuid));
-        CreateMap<List<DiscountModel>, v2.DiscountListResponse>()
+        CreateMap<List<DiscountModel>, DiscountListResponse>()
             .ForMember(d => d.Discounts, opt => opt.MapFrom(src => src));
 
     }

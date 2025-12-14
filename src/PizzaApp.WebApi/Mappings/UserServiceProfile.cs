@@ -2,6 +2,8 @@ using AutoMapper;
 using PizzaApp.BL.Features.Auth.Entities;
 using PizzaApp.BL.Features.Users.DTOs;
 using PizzaApp.BL.Features.Users.Entities;
+using PizzaApp.WebApi.Controllers.v2.Users.DTOs.Requests;
+using PizzaApp.WebApi.Controllers.v2.Users.DTOs.Responses;
 using v1 = PizzaApp.WebApi.Controllers.v1.Users.DTOs;
 using v2 = PizzaApp.WebApi.Controllers.v2.Users.DTOs;
 
@@ -19,11 +21,11 @@ public class UserServiceProfile : Profile
             .ForMember(d => d.Users, opt => 
                 opt.MapFrom(src => src));
         
-        CreateMap<v2.RegisterUserRequest, RegisterUserModel>()
+        CreateMap<RegisterUserRequest, RegisterUserModel>()
             .ForMember(dest => dest.Roles, opt => opt.Ignore());
-        CreateMap<v2.UpdateUserRequest, UpdateUserModel>();
-        CreateMap<v2.ChangeUserBlockInfoRequest, BlockInformationModel>();
-        CreateMap<List<UserModel>, v2.UserListResponse>()
+        CreateMap<UpdateUserRequest, UpdateUserModel>();
+        CreateMap<ChangeUserBlockInfoRequest, BlockInformationModel>();
+        CreateMap<List<UserModel>, UserListResponse>()
             .ForMember(d => d.Users, opt => 
                 opt.MapFrom(src => src));
     }

@@ -3,6 +3,7 @@ using Duende.IdentityServer.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using PizzaApp.BL.Features.Categories.Providers;
 using PizzaApp.WebApi.Controllers.v2.Categories.DTOs;
+using PizzaApp.WebApi.Controllers.v2.Categories.DTOs.Responses;
 
 namespace PizzaApp.WebApi.Controllers.v2.Categories;
 

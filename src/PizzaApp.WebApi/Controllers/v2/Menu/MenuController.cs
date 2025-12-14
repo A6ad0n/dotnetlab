@@ -6,6 +6,8 @@ using PizzaApp.BL.Features.Menu.DTOs;
 using PizzaApp.BL.Features.Menu.Managers;
 using PizzaApp.BL.Features.Menu.Providers;
 using PizzaApp.WebApi.Controllers.v2.Menu.DTOs;
+using PizzaApp.WebApi.Controllers.v2.Menu.DTOs.Requests;
+using PizzaApp.WebApi.Controllers.v2.Menu.DTOs.Responses;
 
 namespace PizzaApp.WebApi.Controllers.v2.Menu;
 

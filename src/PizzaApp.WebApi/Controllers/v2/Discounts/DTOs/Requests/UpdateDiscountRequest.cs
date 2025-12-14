@@ -1,4 +1,4 @@
-namespace PizzaApp.WebApi.Controllers.v2.Discounts.DTOs;
+namespace PizzaApp.WebApi.Controllers.v2.Discounts.DTOs.Requests;
 
 public class UpdateDiscountRequest
 {

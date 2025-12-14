@@ -6,6 +6,8 @@ using PizzaApp.BL.Features.Discounts.DTOs;
 using PizzaApp.BL.Features.Discounts.Managers;
 using PizzaApp.BL.Features.Discounts.Providers;
 using PizzaApp.WebApi.Controllers.v2.Discounts.DTOs;
+using PizzaApp.WebApi.Controllers.v2.Discounts.DTOs.Requests;
+using PizzaApp.WebApi.Controllers.v2.Discounts.DTOs.Responses;
 
 namespace PizzaApp.WebApi.Controllers.v2.Discounts;
 
