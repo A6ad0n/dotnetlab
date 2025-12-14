@@ -1,5 +1,3 @@
-using System.Security.Claims;
-using System.Text;
 using AutoMapper;
 using Duende.IdentityServer.Extensions;
 using Microsoft.AspNetCore.Authorization;
@@ -7,12 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 using PizzaApp.BL.Features.Discounts.DTOs;
 using PizzaApp.BL.Features.Discounts.Managers;
 using PizzaApp.BL.Features.Discounts.Providers;
-using PizzaApp.WebApi.Controllers.Discounts.Entities;
+using PizzaApp.WebApi.Controllers.v1.Discounts.DTOs;
 
-namespace PizzaApp.WebApi.Controllers.Discounts;
+namespace PizzaApp.WebApi.Controllers.v1.Discounts;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/v1/[controller]")]
 public class DiscountsController(
     IDiscountProvider discountProvider,
     IDiscountManager discountManager,

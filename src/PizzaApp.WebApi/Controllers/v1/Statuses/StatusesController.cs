@@ -2,12 +2,12 @@ using AutoMapper;
 using Duende.IdentityServer.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using PizzaApp.BL.Features.Statuses.Providers;
-using PizzaApp.WebApi.Controllers.Statuses.DTOs;
+using PizzaApp.WebApi.Controllers.v1.Statuses.DTOs;
 
-namespace PizzaApp.WebApi.Controllers.Statuses;
+namespace PizzaApp.WebApi.Controllers.v1.Statuses;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/v1/[controller]")]
 public class StatusesController(
     IStatusProvider discountProvider,
     IMapper mapper,

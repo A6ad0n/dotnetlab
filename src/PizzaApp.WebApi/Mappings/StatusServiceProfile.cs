@@ -1,6 +1,6 @@
 using AutoMapper;
 using PizzaApp.BL.Features.Statuses.Entities;
-using PizzaApp.WebApi.Controllers.Statuses.DTOs;
+using PizzaApp.WebApi.Controllers.v1.Statuses.DTOs;
 
 namespace PizzaApp.WebApi.Mappings;
 

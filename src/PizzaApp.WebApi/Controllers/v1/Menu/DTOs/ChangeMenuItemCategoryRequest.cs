@@ -1,4 +1,4 @@
-namespace PizzaApp.WebApi.Controllers.Menu.DTOs;
+namespace PizzaApp.WebApi.Controllers.v1.Menu.DTOs;
 
 public class ChangeMenuItemCategoryRequest
 {

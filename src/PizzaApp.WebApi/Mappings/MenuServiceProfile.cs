@@ -1,7 +1,7 @@
 using AutoMapper;
 using PizzaApp.BL.Features.Menu.DTOs;
 using PizzaApp.BL.Features.Menu.Entities;
-using PizzaApp.WebApi.Controllers.Menu.Entities;
+using PizzaApp.WebApi.Controllers.v1.Menu.DTOs;
 
 namespace PizzaApp.WebApi.Mappings;
  

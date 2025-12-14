@@ -11,7 +11,7 @@ using PizzaApp.BL.Features.Discounts.Entities;
 using PizzaApp.DataAccess.Context;
 using PizzaApp.DataAccess.Entities;
 using PizzaApp.DataAccess.Entities.Primitives;
-using PizzaApp.WebApi.Controllers.Discounts.Entities;
+using PizzaApp.WebApi.Controllers.v1.Discounts.DTOs;
 using PizzaApp.WebApi.Tests;
 
 namespace PizzaApp.WebApi.Tests.Discounts;

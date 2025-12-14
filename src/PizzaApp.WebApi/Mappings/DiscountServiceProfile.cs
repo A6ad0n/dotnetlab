@@ -1,7 +1,7 @@
 using AutoMapper;
 using PizzaApp.BL.Features.Discounts.DTOs;
 using PizzaApp.BL.Features.Discounts.Entities;
-using PizzaApp.WebApi.Controllers.Discounts.Entities;
+using PizzaApp.WebApi.Controllers.v1.Discounts.DTOs;
 
 namespace PizzaApp.WebApi.Mappings;
 

@@ -1,14 +1,13 @@
 using AutoMapper;
 using Duende.IdentityServer.Extensions;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PizzaApp.BL.Features.Categories.Providers;
-using PizzaApp.WebApi.Controllers.Categories.DTOs;
+using PizzaApp.WebApi.Controllers.v1.Categories.DTOs;
 
-namespace PizzaApp.WebApi.Controllers.Categories;
+namespace PizzaApp.WebApi.Controllers.v1.Categories;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/v1/[controller]")]
 public class CategoriesController(
     ICategoryProvider discountProvider,
     IMapper mapper,

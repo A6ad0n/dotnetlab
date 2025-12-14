@@ -1,22 +1,18 @@
 using System.Security.Claims;
-using System.Text;
 using AutoMapper;
 using Duende.IdentityServer.Extensions;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PizzaApp.BL.Features.Users.DTOs;
 using PizzaApp.BL.Features.Users.Entities;
 using PizzaApp.BL.Features.Users.Managers;
 using PizzaApp.BL.Features.Users.Providers;
-using PizzaApp.BL.Features.Users.Validators;
-using PizzaApp.WebApi.Controllers.Users.DTOs;
-using PizzaApp.WebApi.Controllers.Users.Entities;
+using PizzaApp.WebApi.Controllers.v1.Users.DTOs;
 
-namespace PizzaApp.WebApi.Controllers.Users;
+namespace PizzaApp.WebApi.Controllers.v1.Users;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/v1/[controller]")]
 public class UsersController(
     IUsersProvider usersProvider,
     IUsersManager usersManager,

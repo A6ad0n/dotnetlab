@@ -1,16 +1,14 @@
-using System.Text;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PizzaApp.BL.Features.Auth.Entities;
 using PizzaApp.BL.Features.Auth.Managers;
-using PizzaApp.BL.Features.Auth.Validators;
-using PizzaApp.WebApi.Controllers.Authorization.DTOs;
-using PizzaApp.WebApi.Controllers.Users.Entities;
+using PizzaApp.WebApi.Controllers.v1.Authorization.DTOs;
+using PizzaApp.WebApi.Controllers.v1.Users.DTOs;
 
-namespace PizzaApp.WebApi.Controllers.Authorization;
+namespace PizzaApp.WebApi.Controllers.v1.Authorization;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/v1/[controller]")]
 public class AuthController(IAuthManager authManager, IMapper mapper, ILogger<AuthController> logger)
     : ControllerBase
 {

@@ -2,9 +2,8 @@ using AutoMapper;
 using PizzaApp.BL.Features.Auth.Entities;
 using PizzaApp.BL.Features.Users.DTOs;
 using PizzaApp.BL.Features.Users.Entities;
-using PizzaApp.WebApi.Controllers.Authorization.DTOs;
-using PizzaApp.WebApi.Controllers.Users.DTOs;
-using PizzaApp.WebApi.Controllers.Users.Entities;
+using PizzaApp.WebApi.Controllers.v1.Authorization.DTOs;
+using PizzaApp.WebApi.Controllers.v1.Users.DTOs;
 
 namespace PizzaApp.WebApi.Mappings;
 

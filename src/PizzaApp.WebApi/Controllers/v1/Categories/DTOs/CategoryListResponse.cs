@@ -1,6 +1,6 @@
 using PizzaApp.BL.Features.Categories.Entities;
 
-namespace PizzaApp.WebApi.Controllers.Categories.DTOs;
+namespace PizzaApp.WebApi.Controllers.v1.Categories.DTOs;
 
 public class CategoryListResponse
 {

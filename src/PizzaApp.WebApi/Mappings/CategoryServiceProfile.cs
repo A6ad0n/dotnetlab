@@ -1,6 +1,6 @@
 using AutoMapper;
 using PizzaApp.BL.Features.Categories.Entities;
-using PizzaApp.WebApi.Controllers.Categories.DTOs;
+using PizzaApp.WebApi.Controllers.v1.Categories.DTOs;
 
 namespace PizzaApp.WebApi.Mappings;
 

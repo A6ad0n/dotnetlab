@@ -1,4 +1,4 @@
-namespace PizzaApp.WebApi.Controllers.Users.DTOs;
+namespace PizzaApp.WebApi.Controllers.v1.Users.DTOs;
 
 public class ChangeUserBlockInfoRequest
 {

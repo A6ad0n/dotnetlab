@@ -1,5 +1,3 @@
-using System.Security.Claims;
-using System.Text;
 using AutoMapper;
 using Duende.IdentityServer.Extensions;
 using Microsoft.AspNetCore.Authorization;
@@ -7,12 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 using PizzaApp.BL.Features.Menu.DTOs;
 using PizzaApp.BL.Features.Menu.Managers;
 using PizzaApp.BL.Features.Menu.Providers;
-using PizzaApp.WebApi.Controllers.Menu.Entities;
+using PizzaApp.WebApi.Controllers.v1.Menu.DTOs;
 
-namespace PizzaApp.WebApi.Controllers.Menu;
+namespace PizzaApp.WebApi.Controllers.v1.Menu;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/v1/[controller]")]
 public class MenuController(
     IMenuProvider menuProvider,
     IMenuManager menuManager,
