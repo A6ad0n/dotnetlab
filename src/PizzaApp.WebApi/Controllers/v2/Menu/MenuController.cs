@@ -59,7 +59,7 @@ public class MenuController(
     
     [HttpPatch]
     [Route("{id:guid}/edit")]
-    [Authorize (Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateMenuItem([FromRoute] Guid id, [FromBody] UpdateMenuItemRequest request)
     {
         var menuItemModel = await menuManager.UpdateMenuItemAsync(id, mapper.Map<UpdateMenuItemModel>(request));

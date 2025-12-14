@@ -59,7 +59,7 @@ public class DiscountsController(
     
     [HttpPatch]
     [Route("{id:guid}/edit")]
-    [Authorize (Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateDiscount([FromRoute] Guid id, [FromBody] UpdateDiscountRequest request)
     {
         var discountModel = await discountManager.UpdateDiscountAsync(id, mapper.Map<UpdateDiscountModel>(request));
