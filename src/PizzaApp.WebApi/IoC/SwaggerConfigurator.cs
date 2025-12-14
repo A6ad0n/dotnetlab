@@ -20,7 +20,7 @@ namespace PizzaApp.WebApi.IoC
 
             services.AddVersionedApiExplorer(options =>
             {
-                options.GroupNameFormat = "'v'VV";
+                options.GroupNameFormat = "'v'VVV";
                 options.SubstituteApiVersionInUrl = false;
             });
             
