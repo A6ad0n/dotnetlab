@@ -7,5 +7,5 @@ public class CreateDiscountRequest
     public decimal DiscountPercentage { get; set; }
     public DateTime ValidFrom { get; set; }
     public DateTime ValidTo { get; set; }
-    public int StatusId { get; set; }
+    public Guid StatusGuid { get; set; }
 }

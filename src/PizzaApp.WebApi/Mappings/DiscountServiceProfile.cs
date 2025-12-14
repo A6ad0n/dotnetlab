@@ -16,7 +16,9 @@ public class DiscountServiceProfile : Profile
             .ForMember(d => d.Discounts, opt => opt.MapFrom(src => src));
         
         CreateMap<v2.UpdateDiscountRequest, UpdateDiscountModel>();
-        CreateMap<v2.CreateDiscountRequest, CreateDiscountModel>();
+        CreateMap<v2.CreateDiscountRequest, CreateDiscountModel>()
+            .ForMember(d => d.StatusExternalId, opt => 
+                opt.MapFrom(src => src.StatusGuid));
         CreateMap<List<DiscountModel>, v2.DiscountListResponse>()
             .ForMember(d => d.Discounts, opt => opt.MapFrom(src => src));
 

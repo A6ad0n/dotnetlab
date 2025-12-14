@@ -29,10 +29,10 @@ public class DiscountsController(
     }
 
     [HttpGet]
-    [Route("{id:int}")]
-    public async Task<IActionResult> GetDiscountById([FromRoute] int id)
+    [Route("{id:guid}")]
+    public async Task<IActionResult> GetDiscountById([FromRoute] Guid id)
     {
-        var discountModel = await discountProvider.GetByIdAsync(id);
+        var discountModel = await discountProvider.GetByGuidAsync(id);
         return Ok(discountModel);
     }
 
@@ -46,9 +46,9 @@ public class DiscountsController(
     }
 
     [HttpDelete]
-    [Route("{id:int}/delete")]
+    [Route("{id:guid}/delete")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> DeleteDiscount([FromRoute] int id)
+    public async Task<IActionResult> DeleteDiscount([FromRoute] Guid id)
     {
         var result = await discountManager.DeleteDiscountAsync(id);
         if (!result)  return NotFound();
@@ -56,20 +56,20 @@ public class DiscountsController(
     }
     
     [HttpPatch]
-    [Route("{id:int}/edit")]
+    [Route("{id:guid}/edit")]
     [Authorize (Roles = "Admin")]
-    public async Task<IActionResult> UpdateDiscount([FromRoute] int id, [FromBody] UpdateDiscountRequest request)
+    public async Task<IActionResult> UpdateDiscount([FromRoute] Guid id, [FromBody] UpdateDiscountRequest request)
     {
         var discountModel = await discountManager.UpdateDiscountAsync(id, mapper.Map<UpdateDiscountModel>(request));
         return Ok(discountModel);
     }
     
     [HttpPatch]
-    [Route("{id:int}/edit/status/")]
+    [Route("{id:guid}/edit/status/")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> ChangeDiscountStatus([FromRoute] int id, [FromBody] ChangeDiscountStatusRequest request)
+    public async Task<IActionResult> ChangeDiscountStatus([FromRoute] Guid id, [FromBody] ChangeDiscountStatusRequest request)
     {
-        var discountModel = await discountManager.ChangeDiscountStatusAsync(id, request.StatusId);
+        var discountModel = await discountManager.ChangeDiscountStatusAsync(id, request.StatusGuid);
         return Ok(discountModel);
     }
 }
