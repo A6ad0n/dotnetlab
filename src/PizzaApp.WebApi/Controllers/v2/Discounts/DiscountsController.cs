@@ -67,7 +67,7 @@ public class DiscountsController(
     }
     
     [HttpPatch]
-    [Route("{id:guid}/edit/status/")]
+    [Route("{id:guid}/edit/status")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> ChangeDiscountStatus([FromRoute] Guid id, [FromBody] ChangeDiscountStatusRequest request)
     {
