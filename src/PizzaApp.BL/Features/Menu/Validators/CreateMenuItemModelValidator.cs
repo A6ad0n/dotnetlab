@@ -41,6 +41,6 @@ public class CreateMenuItemModelValidator : AbstractValidator<CreateMenuItemMode
             .Must(x => (!x.DiscountIds.IsNullOrEmpty() && x.DiscountExternalIds.IsNullOrEmpty()) ||
                        (x.DiscountIds.IsNullOrEmpty() && !x.DiscountExternalIds.IsNullOrEmpty()) ||
                        (x.DiscountIds.IsNullOrEmpty() && x.DiscountExternalIds.IsNullOrEmpty()))
-            .WithMessage("Только одно из полей DiscountIds или DiscountExternalIds должно быть заполнено");
+            .WithMessage("Only one of the fields DiscountIds or DiscountExternalIds must be filled.");
     }
 }
