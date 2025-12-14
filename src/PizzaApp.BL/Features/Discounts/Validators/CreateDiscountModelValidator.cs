@@ -9,6 +9,6 @@ public class CreateDiscountModelValidator : AbstractValidator<CreateDiscountMode
     {
         RuleFor(x => x)
             .Must(x => x.StatusId.HasValue ^ x.StatusExternalId.HasValue)
-            .WithMessage("Только одно из полей StatusId или StatusExternalId должно быть заполнено");
+            .WithMessage("Only one of the fields StatusId or StatusExternalId must be filled.");
     }
 }
