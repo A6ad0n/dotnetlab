@@ -40,7 +40,7 @@ public class DiscountsController(
     [HttpPut]
     [Route("create")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> CreateDiscount([FromQuery] CreateDiscountRequest request)
+    public async Task<IActionResult> CreateDiscount([FromBody] CreateDiscountRequest request)
     {
         var discountModel = await discountManager.CreateDiscountAsync(mapper.Map<CreateDiscountModel>(request));
         return Ok(discountModel);
@@ -59,7 +59,7 @@ public class DiscountsController(
     [HttpPatch]
     [Route("{id:int}/edit")]
     [Authorize (Roles = "Admin")]
-    public async Task<IActionResult> UpdateDiscount([FromRoute] int id, [FromQuery] UpdateDiscountRequest request)
+    public async Task<IActionResult> UpdateDiscount([FromRoute] int id, [FromBody] UpdateDiscountRequest request)
     {
         var discountModel = await discountManager.UpdateDiscountAsync(id, mapper.Map<UpdateDiscountModel>(request));
         return Ok(discountModel);

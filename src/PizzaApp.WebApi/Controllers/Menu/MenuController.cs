@@ -40,7 +40,7 @@ public class MenuController(
     [HttpPut]
     [Route("create")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> CreateMenuItem([FromQuery] CreateMenuItemRequest request)
+    public async Task<IActionResult> CreateMenuItem([FromBody] CreateMenuItemRequest request)
     {
         var menuItemModel = await menuManager.CreateMenuItemAsync(mapper.Map<CreateMenuItemModel>(request));
         return Ok(menuItemModel);
@@ -59,7 +59,7 @@ public class MenuController(
     [HttpPatch]
     [Route("{id:int}/edit")]
     [Authorize (Roles = "Admin")]
-    public async Task<IActionResult> UpdateMenuItem([FromRoute] int id, [FromQuery] UpdateMenuItemRequest request)
+    public async Task<IActionResult> UpdateMenuItem([FromRoute] int id, [FromBody] UpdateMenuItemRequest request)
     {
         var menuItemModel = await menuManager.UpdateMenuItemAsync(id, mapper.Map<UpdateMenuItemModel>(request));
         return Ok(menuItemModel);

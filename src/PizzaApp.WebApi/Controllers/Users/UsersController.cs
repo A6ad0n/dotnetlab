@@ -76,7 +76,7 @@ public class UsersController(
     [HttpPatch]
     [Route("{id:int}/edit/roles")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> ChangeUserRole([FromRoute] int id, [FromQuery] ChangeUserRolesRequest request)
+    public async Task<IActionResult> ChangeUserRole([FromRoute] int id, [FromBody] ChangeUserRolesRequest request)
     {
         var userModel = await usersManager.ChangeUserRolesAsync(id, mapper.Map<UpdateUserRolesModel>(request));
         return Ok(userModel);
@@ -85,7 +85,7 @@ public class UsersController(
     [HttpPatch]
     [Route("{id:int}/edit/block")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> ChangeUserBlockInfo([FromRoute] int id, [FromQuery] ChangeUserBlockInfoRequest request)
+    public async Task<IActionResult> ChangeUserBlockInfo([FromRoute] int id, [FromBody] ChangeUserBlockInfoRequest request)
     {
         var userModel = await usersManager.ChangeBlockInfoUserAsync(id, mapper.Map<BlockInformationModel>(request));
         return Ok(userModel);
