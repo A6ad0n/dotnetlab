@@ -52,18 +52,18 @@ public class UsersController(
     }
     
     [HttpGet]
-    [Route("{id:int}")]
+    [Route("{id:guid}")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> GetUserById([FromRoute] int id)
+    public async Task<IActionResult> GetUserById([FromRoute] Guid id)
     {
-        var userModel = await usersProvider.GetByIdAsync(id);
+        var userModel = await usersProvider.GetByGuidAsync(id);
         return Ok(userModel);
     }
 
     [HttpDelete]
-    [Route("{id:int}/delete")]
+    [Route("{id:guid}/delete")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> DeleteUser([FromRoute] int id)
+    public async Task<IActionResult> DeleteUser([FromRoute] Guid id)
     {
         var result = await usersManager.DeleteUserAsync(id);
         if (!result)  return NotFound();
@@ -71,18 +71,18 @@ public class UsersController(
     }
     
     [HttpPatch]
-    [Route("{id:int}/edit/roles")]
+    [Route("{id:guid}/edit/roles")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> ChangeUserRole([FromRoute] int id, [FromBody] ChangeUserRolesRequest request)
+    public async Task<IActionResult> ChangeUserRole([FromRoute] Guid id, [FromBody] ChangeUserRolesRequest request)
     {
-        var userModel = await usersManager.ChangeUserRolesAsync(id, request.RoleIds);
+        var userModel = await usersManager.ChangeUserRolesAsync(id, request.RoleGuids);
         return Ok(userModel);
     }
     
     [HttpPatch]
-    [Route("{id:int}/edit/block")]
+    [Route("{id:guid}/edit/block")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> ChangeUserBlockInfo([FromRoute] int id, [FromBody] ChangeUserBlockInfoRequest request)
+    public async Task<IActionResult> ChangeUserBlockInfo([FromRoute] Guid id, [FromBody] ChangeUserBlockInfoRequest request)
     {
         var userModel = await usersManager.ChangeBlockInfoUserAsync(id, mapper.Map<BlockInformationModel>(request));
         return Ok(userModel);
