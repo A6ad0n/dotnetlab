@@ -6,9 +6,12 @@ namespace PizzaApp.BL.Features.Discounts.Managers;
 public interface IDiscountManager
 {
     Task<DiscountModel> UpdateDiscountAsync(int discountId, UpdateDiscountModel model);
+    Task<DiscountModel> UpdateDiscountAsync(Guid discountGuid, UpdateDiscountModel model);
     
     Task<DiscountModel> ChangeDiscountStatusAsync(int discountId, int statusId);
+    Task<DiscountModel> ChangeDiscountStatusAsync(Guid discountGuid, Guid statusGuid);
     
     Task<DiscountModel> CreateDiscountAsync(CreateDiscountModel model);
     Task<bool> DeleteDiscountAsync(int discountId);
+    Task<bool> DeleteDiscountAsync(Guid discountGuid);
 }
