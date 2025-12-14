@@ -1,6 +1,7 @@
 using AutoMapper;
 using PizzaApp.BL.Features.Auth.Entities;
 using v1 = PizzaApp.WebApi.Controllers.v1.Authorization.DTOs;
+using v2 = PizzaApp.WebApi.Controllers.v2.Authorization.DTOs;
 
 namespace PizzaApp.WebApi.Mappings;
 
@@ -9,5 +10,7 @@ public class AuthServiceProfile : Profile
     public AuthServiceProfile()
     {
         CreateMap<v1.AuthorizeUserRequest, AuthorizeUserModel>();
+        
+        CreateMap<v2.AuthorizeUserRequest, AuthorizeUserModel>();
     }
 }

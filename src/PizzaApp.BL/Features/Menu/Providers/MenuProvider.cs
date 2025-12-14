@@ -16,6 +16,14 @@ public class MenuProvider(IMenuItemRepository menuItemRepository, IMapper mapper
         return mapper.Map<MenuItemModel>(menuItems);
     }
     
+    public async Task<MenuItemModel> GetByGuidAsync(Guid guid)
+    {
+        var menuItems = await menuItemRepository.GetByGuidWithAllDataAsync(guid) ??
+                        throw new BusinessLogicException<MenuResultCode>(MenuResultCode.MenuItemNotFound);
+        
+        return mapper.Map<MenuItemModel>(menuItems);
+    }
+    
     public async Task<List<MenuItemModel>> GetAllAsync()
     {
         var menuItems = await menuItemRepository.GetAllWithDetailsAsync();

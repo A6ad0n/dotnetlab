@@ -13,6 +13,7 @@ namespace PizzaApp.WebApi.Controllers.v1.Users;
 
 [ApiController]
 [Route("api/v1/[controller]")]
+[ApiVersion("1.0")]
 public class UsersController(
     IUsersProvider usersProvider,
     IUsersManager usersManager,
@@ -74,7 +75,7 @@ public class UsersController(
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> ChangeUserRole([FromRoute] int id, [FromBody] ChangeUserRolesRequest request)
     {
-        var userModel = await usersManager.ChangeUserRolesAsync(id, mapper.Map<UpdateUserRolesModel>(request));
+        var userModel = await usersManager.ChangeUserRolesAsync(id, request.RoleIds);
         return Ok(userModel);
     }
     

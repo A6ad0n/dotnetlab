@@ -16,6 +16,14 @@ public class UsersProvider(IUserRepository userRepository, IMapper mapper) : IUs
         return mapper.Map<UserModel>(user);
     }
     
+    public async Task<UserModel> GetByGuidAsync(Guid guid)
+    {
+        var user = await userRepository.GetByGuidWithAllDataAsync(guid) ??
+                   throw new BusinessLogicException<UserResultCode>(UserResultCode.UserNotFound);
+        
+        return mapper.Map<UserModel>(user);
+    }
+    
     public async Task<List<UserModel>> GetAllAsync()
     {
         var users = await userRepository.GetAllWithAllDataAsync();

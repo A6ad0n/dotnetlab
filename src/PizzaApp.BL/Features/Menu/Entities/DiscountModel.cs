@@ -2,6 +2,8 @@ namespace PizzaApp.BL.Features.Menu.Entities;
 
 public class DiscountModel
 {
+    public int Id { get; set; }
+    public Guid ExternalId { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }
     public decimal DiscountPercentage { get; set; }

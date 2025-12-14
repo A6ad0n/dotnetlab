@@ -16,16 +16,42 @@ public class DiscountManager(IDiscountRepository discountRepository, IMapper map
 {
     public async Task<DiscountModel> CreateDiscountAsync(CreateDiscountModel model)
     {
-        var discount = mapper.Map<DiscountEntity>(model);
-        
-        var isStatusExist = await discountRepository.ExistsStatusAsync(discount.StatusId);
-        if (!isStatusExist)
+        var validationResult = await new CreateDiscountModelValidator().ValidateAsync(model);
+        if (!validationResult.IsValid)
         {
-            throw new BusinessLogicException<DiscountResultCode>(DiscountResultCode.StatusNotFound);
+            var errors = validationResult.Errors.Select(x => x.ErrorMessage);
+            var stringBuilder = new StringBuilder();
+            foreach (var error in errors)
+                stringBuilder.AppendLine(error);
+            throw new BusinessLogicException<DiscountResultCode>(DiscountResultCode.DiscountValidationFailure,
+                stringBuilder.ToString());
         }
         
+        var discount = mapper.Map<DiscountEntity>(model);
+
+        if (model.StatusExternalId.HasValue)
+        {
+            var statuses = await discountRepository.GetAllStatusesAsync();
+            var status = statuses.FirstOrDefault(s => s.ExternalId == model.StatusExternalId.Value);
+            
+            if (status == null)
+            {
+                throw new BusinessLogicException<DiscountResultCode>(DiscountResultCode.StatusNotFound);
+            }
+            discount.StatusId = status.Id;
+        }
+        else
+        {
+            var isStatusExist = await discountRepository.ExistsStatusAsync(discount.StatusId);
+            if (!isStatusExist)
+            {
+                throw new BusinessLogicException<DiscountResultCode>(DiscountResultCode.StatusNotFound);
+            }
+        }
+
         var newDiscount = await discountRepository.SaveAsync(discount);
-        return mapper.Map<DiscountModel>(newDiscount);
+        var result = await discountRepository.GetByIdWithStatusAsync(newDiscount.Id);
+        return mapper.Map<DiscountModel>(result);
     }
 
     public async Task<DiscountModel> UpdateDiscountAsync(int discountId, UpdateDiscountModel model)
@@ -76,6 +102,14 @@ public class DiscountManager(IDiscountRepository discountRepository, IMapper map
         }
     }
     
+    public async Task<DiscountModel> UpdateDiscountAsync(Guid discountGuid, UpdateDiscountModel model)
+    {
+        var discount = await discountRepository.GetByGuidWithDetailsAsync(discountGuid) ?? 
+                       throw new BusinessLogicException<DiscountResultCode>(DiscountResultCode.DiscountNotFound);
+        return await UpdateDiscountAsync(discount.Id, model);
+    }
+
+    
     public async Task<DiscountModel> ChangeDiscountStatusAsync(int discountId, int statusId)
     {
         var discount = await discountRepository.GetByIdWithDetailsAsync(discountId) ??
@@ -98,12 +132,31 @@ public class DiscountManager(IDiscountRepository discountRepository, IMapper map
         {
             logger.LogError(e.Message);
             throw new BusinessLogicException<DiscountResultCode>(DiscountResultCode.DiscountUpdateFailure, 
-                "Failed to update discount block information");
+                "Failed to update discount status");
         }
+    }
+
+    public async Task<DiscountModel> ChangeDiscountStatusAsync(Guid discountGuid, Guid statusGuid)
+    {
+        var discount = await discountRepository.GetByGuidWithDetailsAsync(discountGuid) ??
+                       throw new BusinessLogicException<DiscountResultCode>(DiscountResultCode.DiscountNotFound);
+        var statuses = await discountRepository.GetAllStatusesAsync();
+        var status = statuses.FirstOrDefault(s => s.ExternalId == statusGuid);
+        if (status == null)
+        {
+            throw new BusinessLogicException<DiscountResultCode>(DiscountResultCode.StatusNotFound);
+        }
+        
+        return await ChangeDiscountStatusAsync(discount.Id, status.Id);
     }
 
     public async Task<bool> DeleteDiscountAsync(int discountId)
     {
         return await discountRepository.DeleteAsync(discountId);
+    }
+    
+    public async Task<bool> DeleteDiscountAsync(Guid discountGuid)
+    {
+        return await discountRepository.DeleteAsync(discountGuid);
     }
 }

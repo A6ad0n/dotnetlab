@@ -5,6 +5,7 @@ namespace PizzaApp.BL.Features.Discounts.Entities;
 public class StatusModel
 {
     public int Id { get; set; }
+    public Guid ExternalId { get; set; }
     public string Name { get; set; }
     public StatusTypeModel StatusType { get; set; }
 }

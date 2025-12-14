@@ -272,7 +272,6 @@ public class MenuItemRepository(IDbContextFactory<PizzaAppDbContext> contextFact
         await using var context = await _contextFactory.CreateDbContextAsync();
 
         menuItem.CategoryId = categoryId;
-        menuItem.Category = await context.MenuCategories.FindAsync(categoryId);
 
         context.MenuItems.Update(menuItem);
         await context.SaveChangesAsync();
@@ -288,7 +287,6 @@ public class MenuItemRepository(IDbContextFactory<PizzaAppDbContext> contextFact
             .FirstOrDefaultAsync();
         
         menuItem.CategoryId = categoryId;
-        menuItem.Category = await context.MenuCategories.FindAsync(categoryId);
 
         context.MenuItems.Update(menuItem);
         await context.SaveChangesAsync();
@@ -317,7 +315,6 @@ public class MenuItemRepository(IDbContextFactory<PizzaAppDbContext> contextFact
         await using var context = await _contextFactory.CreateDbContextAsync();
 
         menuItem.StatusId = statusId;
-        menuItem.Status = await context.Statuses.FindAsync(statusId);
 
         context.MenuItems.Update(menuItem);
         await context.SaveChangesAsync();
@@ -333,7 +330,6 @@ public class MenuItemRepository(IDbContextFactory<PizzaAppDbContext> contextFact
             .FirstOrDefaultAsync();
         
         menuItem.StatusId = statusId;
-        menuItem.Status = await context.Statuses.FindAsync(statusId);
 
         context.MenuItems.Update(menuItem);
         await context.SaveChangesAsync();

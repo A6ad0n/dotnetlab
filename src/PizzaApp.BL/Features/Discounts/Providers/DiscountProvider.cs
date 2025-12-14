@@ -16,6 +16,14 @@ public class DiscountProvider(IDiscountRepository menuItemRepository, IMapper ma
         return mapper.Map<DiscountModel>(discount);
     }
     
+    public async Task<DiscountModel> GetByGuidAsync(Guid guid)
+    {
+        var discount = await menuItemRepository.GetByGuidWithDetailsAsync(guid) ??
+                       throw new BusinessLogicException<DiscountResultCode>(DiscountResultCode.DiscountNotFound);
+        
+        return mapper.Map<DiscountModel>(discount);
+    }
+    
     public async Task<List<DiscountModel>> GetAllAsync()
     {
         var discounts = await menuItemRepository.GetAllWithDetailsAsync();

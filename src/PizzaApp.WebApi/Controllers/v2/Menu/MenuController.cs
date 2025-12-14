@@ -1,0 +1,95 @@
+using AutoMapper;
+using Duende.IdentityServer.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using PizzaApp.BL.Features.Menu.DTOs;
+using PizzaApp.BL.Features.Menu.Managers;
+using PizzaApp.BL.Features.Menu.Providers;
+using PizzaApp.WebApi.Controllers.v2.Menu.DTOs;
+using PizzaApp.WebApi.Controllers.v2.Menu.DTOs.Requests;
+using PizzaApp.WebApi.Controllers.v2.Menu.DTOs.Responses;
+
+namespace PizzaApp.WebApi.Controllers.v2.Menu;
+
+[ApiController]
+[Route("api/v2/[controller]")]
+[ApiVersion("2.0")]
+public class MenuController(
+    IMenuProvider menuProvider,
+    IMenuManager menuManager,
+    IMapper mapper,
+    ILogger<MenuController> logger)
+    : ControllerBase
+{
+    [HttpGet]
+    [Route("")]
+    public async Task<IActionResult> GetMenu()
+    {
+        var menuModels = await menuProvider.GetAllAsync();
+        if (menuModels.IsNullOrEmpty()) return NotFound();
+        return Ok(mapper.Map<MenuItemListResponse>(menuModels));
+    }
+
+    [HttpGet]
+    [Route("{id:guid}")]
+    public async Task<IActionResult> GetMenuItemById([FromRoute] Guid id)
+    {
+        var menuItemModel = await menuProvider.GetByGuidAsync(id);
+        return Ok(mapper.Map<MenuItemResponse>(menuItemModel));
+    }
+
+    [HttpPut]
+    [Route("create")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> CreateMenuItem([FromBody] CreateMenuItemRequest request)
+    {
+        var menuItemModel = await menuManager.CreateMenuItemAsync(mapper.Map<CreateMenuItemModel>(request));
+        return Ok(mapper.Map<MenuItemResponse>(menuItemModel));
+    }
+
+    [HttpDelete]
+    [Route("{id:guid}/delete")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> DeleteMenuItem([FromRoute] Guid id)
+    {
+        var result = await menuManager.DeleteMenuItemAsync(id);
+        if (!result)  return NotFound();
+        return Ok();
+    }
+    
+    [HttpPatch]
+    [Route("{id:guid}/edit")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> UpdateMenuItem([FromRoute] Guid id, [FromBody] UpdateMenuItemRequest request)
+    {
+        var menuItemModel = await menuManager.UpdateMenuItemAsync(id, mapper.Map<UpdateMenuItemModel>(request));
+        return Ok(mapper.Map<MenuItemResponse>(menuItemModel));
+    }
+    
+    [HttpPatch]
+    [Route("{id:guid}/edit/discounts")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> ChangeMenuItemDiscounts([FromRoute] Guid id, [FromBody] ChangeMenuItemDiscountsRequest request)
+    {
+        var menuItemModel = await menuManager.ChangeMenuItemDiscountsAsync(id, request.DiscountGuids);
+        return Ok(mapper.Map<MenuItemResponse>(menuItemModel));
+    }
+    
+    [HttpPatch]
+    [Route("{id:guid}/edit/category")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> ChangeMenuItemCategory([FromRoute] Guid id, [FromBody] ChangeMenuItemCategoryRequest request)
+    {
+        var menuItemModel = await menuManager.ChangeMenuItemCategoryAsync(id, request.CategoryGuid);
+        return Ok(mapper.Map<MenuItemResponse>(menuItemModel));
+    }
+    
+    [HttpPatch]
+    [Route("{id:guid}/edit/status")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> ChangeMenuItemStatus([FromRoute] Guid id, [FromBody] ChangeMenuItemStatusRequest request)
+    {
+        var menuItemModel = await menuManager.ChangeMenuItemStatusAsync(id, request.StatusGuid);
+        return Ok(mapper.Map<MenuItemResponse>(menuItemModel));
+    }
+}

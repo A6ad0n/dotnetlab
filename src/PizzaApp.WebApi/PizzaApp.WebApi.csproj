@@ -46,7 +46,6 @@
 
     <ItemGroup>
       <Folder Include="Controllers\v1\" />
-      <Folder Include="Controllers\v2\" />
     </ItemGroup>
 
 </Project>

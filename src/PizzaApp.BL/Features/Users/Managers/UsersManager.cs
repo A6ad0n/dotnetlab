@@ -44,7 +44,8 @@ public class UsersManager(IUserRepository userRepository, IMapper mapper, ILogge
         try
         {
             var updatedUser = await userRepository.SaveAsync(user);
-            return mapper.Map<UserModel>(updatedUser);
+            var result = await userRepository.GetByIdWithDetailsAsync(updatedUser.Id);
+            return mapper.Map<UserModel>(result);
         }
         catch (Exception e)
         {
@@ -84,17 +85,17 @@ public class UsersManager(IUserRepository userRepository, IMapper mapper, ILogge
         }
     }
 
-    public async Task<UserModel> ChangeUserRolesAsync(int userId, UpdateUserRolesModel model)
+    public async Task<UserModel> ChangeUserRolesAsync(int userId, List<int> roleIds)
     {
         var user = await userRepository.GetByIdWithRolesAsync(userId)
                    ?? throw new BusinessLogicException<UserResultCode>(UserResultCode.UserNotFound);
-
+        
         try
         {
             var allRoles = await userRepository.GetAllRolesAsync();
             var allRoleIds = allRoles.Select(r => r.Id).ToHashSet();
             
-            var nonExistent = model.RoleIds.Where(r => !allRoleIds.Contains(r)).ToList();
+            var nonExistent = roleIds.Where(r => !allRoleIds.Contains(r)).ToList();
             if (nonExistent.Count != 0)
             {
                 throw new BusinessLogicException<UserResultCode>(
@@ -103,7 +104,7 @@ public class UsersManager(IUserRepository userRepository, IMapper mapper, ILogge
                 );
             }
             
-            var newRoleIds = model.RoleIds.Where(r => allRoleIds.Contains(r)).ToList();
+            var newRoleIds = roleIds.Where(r => allRoleIds.Contains(r)).ToList();
             
             await userRepository.UpdateUserRolesAsync(user, newRoleIds);
 
@@ -120,5 +121,42 @@ public class UsersManager(IUserRepository userRepository, IMapper mapper, ILogge
     public async Task<bool> DeleteUserAsync(int userId)
     {
         return await userRepository.DeleteAsync(userId);
+    }
+    
+    public async Task<UserModel> UpdateUserAsync(Guid userGuid, UpdateUserModel model)
+    {
+        var user = await userRepository.GetByGuidAsync(userGuid) ?? 
+                   throw new BusinessLogicException<UserResultCode>(UserResultCode.UserNotFound);
+        return await UpdateUserAsync(user.Id, model);
+    }
+
+    public async Task<UserModel> ChangeBlockInfoUserAsync(Guid userGuid, BlockInformationModel model)
+    {
+        var user = await userRepository.GetByGuidWithRolesAsync(userGuid)
+                   ?? throw new BusinessLogicException<UserResultCode>(UserResultCode.UserNotFound);
+        return await ChangeBlockInfoUserAsync(user.Id, model);
+    }
+    
+    public async Task<UserModel> ChangeUserRolesAsync(Guid userGuid, List<Guid> roleGuids)
+    {
+        var user = await userRepository.GetByGuidWithRolesAsync(userGuid)
+                   ?? throw new BusinessLogicException<UserResultCode>(UserResultCode.UserNotFound);
+        var roles = await userRepository.GetAllRolesAsync();
+        var roleIds = roles
+            .Where(r => roleGuids.Contains(r.ExternalId))
+            .Select(r => r.Id)
+            .ToList();
+
+        if (roleGuids.Count != roleIds.Count)
+        {
+            throw new BusinessLogicException<UserResultCode>(UserResultCode.RolesNotFound);
+        }
+        
+        return await ChangeUserRolesAsync(user.Id, roleIds);
+    }
+    
+    public async Task<bool> DeleteUserAsync(Guid userGuid)
+    {
+        return await userRepository.DeleteAsync(userGuid);
     }
 }

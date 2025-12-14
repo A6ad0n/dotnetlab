@@ -100,6 +100,15 @@ public class DiscountManagerTests
             DiscountPercentage = 70.0m,
             StatusId = statusId
         };
+        var expectedDiscount = new DiscountEntity
+        {
+            Id = discountId,
+            Name = model.Name,
+            Description = model.Description,
+            DiscountPercentage = model.DiscountPercentage,
+            StatusId = statusId,
+            Status = _statusEntities.First(s => s.Id == statusId)
+        };
         
         _repo.Setup(r => r.ExistsStatusAsync(statusId)).ReturnsAsync(true);
         _repo.Setup(r => r.SaveAsync(It.IsAny<DiscountEntity>()))
@@ -109,6 +118,8 @@ public class DiscountManagerTests
                 e.Status = _statusEntities.First(s => s.Id == e.StatusId);
                 return e;
             });
+        _repo.Setup(r => r.GetByIdWithStatusAsync(discountId))
+            .ReturnsAsync(expectedDiscount);
         
         var result = await _manager.CreateDiscountAsync(model);
         

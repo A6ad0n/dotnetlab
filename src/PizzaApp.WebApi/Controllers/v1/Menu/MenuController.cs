@@ -11,6 +11,7 @@ namespace PizzaApp.WebApi.Controllers.v1.Menu;
 
 [ApiController]
 [Route("api/v1/[controller]")]
+[ApiVersion("1.0")]
 public class MenuController(
     IMenuProvider menuProvider,
     IMenuManager menuManager,
