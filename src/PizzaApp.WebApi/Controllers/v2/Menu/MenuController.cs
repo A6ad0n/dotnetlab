@@ -35,7 +35,7 @@ public class MenuController(
     public async Task<IActionResult> GetMenuItemById([FromRoute] Guid id)
     {
         var menuItemModel = await menuProvider.GetByGuidAsync(id);
-        return Ok(menuItemModel);
+        return Ok(mapper.Map<MenuItemResponse>(menuItemModel));
     }
 
     [HttpPut]
@@ -44,7 +44,7 @@ public class MenuController(
     public async Task<IActionResult> CreateMenuItem([FromBody] CreateMenuItemRequest request)
     {
         var menuItemModel = await menuManager.CreateMenuItemAsync(mapper.Map<CreateMenuItemModel>(request));
-        return Ok(menuItemModel);
+        return Ok(mapper.Map<MenuItemResponse>(menuItemModel));
     }
 
     [HttpDelete]
@@ -63,7 +63,7 @@ public class MenuController(
     public async Task<IActionResult> UpdateMenuItem([FromRoute] Guid id, [FromBody] UpdateMenuItemRequest request)
     {
         var menuItemModel = await menuManager.UpdateMenuItemAsync(id, mapper.Map<UpdateMenuItemModel>(request));
-        return Ok(menuItemModel);
+        return Ok(mapper.Map<MenuItemResponse>(menuItemModel));
     }
     
     [HttpPatch]
@@ -72,7 +72,7 @@ public class MenuController(
     public async Task<IActionResult> ChangeMenuItemDiscounts([FromRoute] Guid id, [FromBody] ChangeMenuItemDiscountsRequest request)
     {
         var menuItemModel = await menuManager.ChangeMenuItemDiscountsAsync(id, request.DiscountGuids);
-        return Ok(menuItemModel);
+        return Ok(mapper.Map<MenuItemResponse>(menuItemModel));
     }
     
     [HttpPatch]
@@ -81,7 +81,7 @@ public class MenuController(
     public async Task<IActionResult> ChangeMenuItemCategory([FromRoute] Guid id, [FromBody] ChangeMenuItemCategoryRequest request)
     {
         var menuItemModel = await menuManager.ChangeMenuItemCategoryAsync(id, request.CategoryGuid);
-        return Ok(menuItemModel);
+        return Ok(mapper.Map<MenuItemResponse>(menuItemModel));
     }
     
     [HttpPatch]
@@ -90,6 +90,6 @@ public class MenuController(
     public async Task<IActionResult> ChangeMenuItemStatus([FromRoute] Guid id, [FromBody] ChangeMenuItemStatusRequest request)
     {
         var menuItemModel = await menuManager.ChangeMenuItemStatusAsync(id, request.StatusGuid);
-        return Ok(menuItemModel);
+        return Ok(mapper.Map<MenuItemResponse>(menuItemModel));
     }
 }

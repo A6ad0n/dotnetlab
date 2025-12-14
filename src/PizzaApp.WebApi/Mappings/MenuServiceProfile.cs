@@ -18,6 +18,23 @@ public class MenuServiceProfile : Profile
             .ForMember(d => d.MenuItems, opt => 
                 opt.MapFrom(src => src));
         
+        CreateMap<StatusModel, v2.Responses.StatusResponse>()
+            .ForMember(dest => dest.Id, opt => 
+                opt.MapFrom(src => src.ExternalId));
+        CreateMap<CategoryModel, v2.Responses.CategoryResponse>()
+            .ForMember(dest => dest.Id, opt => 
+                opt.MapFrom(src => src.ExternalId));
+        CreateMap<DiscountModel, v2.Responses.DiscountResponse>()
+            .ForMember(dest => dest.Id, opt => 
+                opt.MapFrom(src => src.ExternalId));
+        CreateMap<MenuItemModel, v2.Responses.MenuItemResponse>()
+            .ForMember(dest => dest.Id, opt => 
+                opt.MapFrom(src => src.ExternalId));
+        CreateMap<List<MenuItemModel>, v2.Responses.MenuItemListResponse>()
+            .ForMember(d => d.MenuItems, opt => 
+                opt.MapFrom(src => src));
+        
+        
         CreateMap<UpdateMenuItemRequest, UpdateMenuItemModel>();
         CreateMap<CreateMenuItemRequest, CreateMenuItemModel>()
             .ForMember(d => d.StatusExternalId, opt => 
@@ -26,8 +43,5 @@ public class MenuServiceProfile : Profile
                 opt.MapFrom(src => src.CategoryGuid))
             .ForMember(d => d.DiscountExternalIds, opt => 
                 opt.MapFrom(src => src.DiscountGuids));
-        CreateMap<List<MenuItemModel>, MenuItemListResponse>()
-            .ForMember(d => d.MenuItems, opt => 
-                opt.MapFrom(src => src));
     }
 }

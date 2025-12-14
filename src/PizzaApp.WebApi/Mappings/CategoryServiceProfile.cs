@@ -14,7 +14,10 @@ public class CategoryServiceProfile : Profile
             .ForMember(d => d.Categories, opt => 
                 opt.MapFrom(src => src));
         
-        CreateMap<List<CategoryModel>, CategoryListResponse>()
+        CreateMap<CategoryModel, v2.Responses.CategoryResponse>()
+            .ForMember(dest => dest.Id, opt => 
+                opt.MapFrom(src => src.ExternalId));
+        CreateMap<List<CategoryModel>, v2.Responses.CategoryListResponse>()
             .ForMember(d => d.Categories, opt => 
                 opt.MapFrom(src => src));
     }

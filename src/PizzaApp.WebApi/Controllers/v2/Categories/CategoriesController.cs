@@ -30,6 +30,6 @@ public class CategoriesController(
     public async Task<IActionResult> GetCategoryById([FromRoute] Guid id)
     {
         var categoryModel = await categoryProvider.GetByGuidAsync(id);
-        return Ok(categoryModel);
+        return Ok(mapper.Map<CategoryResponse>(categoryModel));
     }
 }

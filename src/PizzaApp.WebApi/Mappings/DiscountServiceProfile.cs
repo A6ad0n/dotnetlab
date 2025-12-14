@@ -17,12 +17,20 @@ public class DiscountServiceProfile : Profile
         CreateMap<List<DiscountModel>, v1.DiscountListResponse>()
             .ForMember(d => d.Discounts, opt => opt.MapFrom(src => src));
         
+        
+        CreateMap<StatusModel, v2.Responses.StatusResponse>()
+            .ForMember(dest => dest.Id, opt => 
+                opt.MapFrom(src => src.ExternalId));
+        CreateMap<DiscountModel, v2.Responses.DiscountResponse>()
+            .ForMember(dest => dest.Id, opt => 
+                opt.MapFrom(src => src.ExternalId));
+        CreateMap<List<DiscountModel>, v2.Responses.DiscountListResponse>()
+            .ForMember(d => d.Discounts, opt => opt.MapFrom(src => src));
+        
         CreateMap<UpdateDiscountRequest, UpdateDiscountModel>();
         CreateMap<CreateDiscountRequest, CreateDiscountModel>()
             .ForMember(d => d.StatusExternalId, opt => 
                 opt.MapFrom(src => src.StatusGuid));
-        CreateMap<List<DiscountModel>, DiscountListResponse>()
-            .ForMember(d => d.Discounts, opt => opt.MapFrom(src => src));
 
     }
 }

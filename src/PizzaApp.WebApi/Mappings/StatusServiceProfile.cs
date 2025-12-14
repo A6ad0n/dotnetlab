@@ -14,7 +14,10 @@ public class StatusServiceProfile : Profile
             .ForMember(d => d.Statuses, opt => 
                 opt.MapFrom(src => src));
         
-        CreateMap<List<StatusModel>, StatusListResponse>()
+        CreateMap<StatusModel, v2.Responses.StatusResponse>()
+            .ForMember(dest => dest.Id, opt => 
+                opt.MapFrom(src => src.ExternalId));
+        CreateMap<List<StatusModel>, v2.Responses.StatusListResponse>()
             .ForMember(d => d.Statuses, opt => 
                 opt.MapFrom(src => src));
     }

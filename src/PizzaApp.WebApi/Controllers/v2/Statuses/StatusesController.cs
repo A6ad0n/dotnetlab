@@ -30,6 +30,6 @@ public class StatusesController(
     public async Task<IActionResult> GetStatusById([FromRoute] Guid id)
     {
         var statusModel = await statusProvider.GetByGuidAsync(id);
-        return Ok(statusModel);
+        return Ok(mapper.Map<StatusResponse>(statusModel));
     }
 }

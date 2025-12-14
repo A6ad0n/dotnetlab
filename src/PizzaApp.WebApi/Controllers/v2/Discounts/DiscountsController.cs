@@ -35,7 +35,7 @@ public class DiscountsController(
     public async Task<IActionResult> GetDiscountById([FromRoute] Guid id)
     {
         var discountModel = await discountProvider.GetByGuidAsync(id);
-        return Ok(discountModel);
+        return Ok(mapper.Map<DiscountResponse>(discountModel));
     }
 
     [HttpPut]
@@ -44,7 +44,7 @@ public class DiscountsController(
     public async Task<IActionResult> CreateDiscount([FromBody] CreateDiscountRequest request)
     {
         var discountModel = await discountManager.CreateDiscountAsync(mapper.Map<CreateDiscountModel>(request));
-        return Ok(discountModel);
+        return Ok(mapper.Map<DiscountResponse>(discountModel));
     }
 
     [HttpDelete]
@@ -63,7 +63,7 @@ public class DiscountsController(
     public async Task<IActionResult> UpdateDiscount([FromRoute] Guid id, [FromBody] UpdateDiscountRequest request)
     {
         var discountModel = await discountManager.UpdateDiscountAsync(id, mapper.Map<UpdateDiscountModel>(request));
-        return Ok(discountModel);
+        return Ok(mapper.Map<DiscountResponse>(discountModel));
     }
     
     [HttpPatch]
@@ -72,6 +72,6 @@ public class DiscountsController(
     public async Task<IActionResult> ChangeDiscountStatus([FromRoute] Guid id, [FromBody] ChangeDiscountStatusRequest request)
     {
         var discountModel = await discountManager.ChangeDiscountStatusAsync(id, request.StatusGuid);
-        return Ok(discountModel);
+        return Ok(mapper.Map<DiscountResponse>(discountModel));
     }
 }

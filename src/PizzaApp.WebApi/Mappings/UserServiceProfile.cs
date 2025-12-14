@@ -21,11 +21,20 @@ public class UserServiceProfile : Profile
             .ForMember(d => d.Users, opt => 
                 opt.MapFrom(src => src));
         
-        CreateMap<RegisterUserRequest, RegisterUserModel>()
+        
+        CreateMap<v2.Requests.RegisterUserRequest, RegisterUserModel>()
             .ForMember(dest => dest.Roles, opt => opt.Ignore());
-        CreateMap<UpdateUserRequest, UpdateUserModel>();
-        CreateMap<ChangeUserBlockInfoRequest, BlockInformationModel>();
-        CreateMap<List<UserModel>, UserListResponse>()
+        CreateMap<v2.Requests.UpdateUserRequest, UpdateUserModel>();
+        CreateMap<v2.Requests.ChangeUserBlockInfoRequest, BlockInformationModel>();
+        
+        CreateMap<BlockInformationModel, v2.Responses.BlockInfoResponse>();
+        CreateMap<RoleModel, v2.Responses.RoleResponse>()
+            .ForMember(dest => dest.Id, opt => 
+                opt.MapFrom(src => src.ExternalId));
+        CreateMap<UserModel, v2.Responses.UserResponse>()
+            .ForMember(dest => dest.Id, opt => 
+                opt.MapFrom(src => src.ExternalId));
+        CreateMap<List<UserModel>, v2.Responses.UserListResponse>()
             .ForMember(d => d.Users, opt => 
                 opt.MapFrom(src => src));
     }

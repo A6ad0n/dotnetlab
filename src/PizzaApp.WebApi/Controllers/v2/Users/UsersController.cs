@@ -30,7 +30,7 @@ public class UsersController(
     {
         var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var userModel = await usersProvider.GetByIdAsync(userId);
-        return Ok(userModel);
+        return Ok(mapper.Map<UserResponse>(userModel));
     }
 
     [HttpPatch]
@@ -40,7 +40,7 @@ public class UsersController(
     {
         var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var userModel = await usersManager.UpdateUserAsync(userId, mapper.Map<UpdateUserModel>(request));
-        return Ok(userModel);
+        return Ok(mapper.Map<UserResponse>(userModel));
     }
     
     [HttpGet]
@@ -59,7 +59,7 @@ public class UsersController(
     public async Task<IActionResult> GetUserById([FromRoute] Guid id)
     {
         var userModel = await usersProvider.GetByGuidAsync(id);
-        return Ok(userModel);
+        return Ok(mapper.Map<UserResponse>(userModel));
     }
 
     [HttpDelete]
@@ -78,7 +78,7 @@ public class UsersController(
     public async Task<IActionResult> ChangeUserRole([FromRoute] Guid id, [FromBody] ChangeUserRolesRequest request)
     {
         var userModel = await usersManager.ChangeUserRolesAsync(id, request.RoleGuids);
-        return Ok(userModel);
+        return Ok(mapper.Map<UserResponse>(userModel));
     }
     
     [HttpPatch]
@@ -87,6 +87,6 @@ public class UsersController(
     public async Task<IActionResult> ChangeUserBlockInfo([FromRoute] Guid id, [FromBody] ChangeUserBlockInfoRequest request)
     {
         var userModel = await usersManager.ChangeBlockInfoUserAsync(id, mapper.Map<BlockInformationModel>(request));
-        return Ok(userModel);
+        return Ok(mapper.Map<UserResponse>(userModel));
     }
 }

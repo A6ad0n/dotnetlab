@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PizzaApp.BL.Features.Auth.Entities;
 using PizzaApp.BL.Features.Auth.Managers;
 using PizzaApp.WebApi.Controllers.v2.Authorization.DTOs;
-using PizzaApp.WebApi.Controllers.v2.Users.DTOs;
+using PizzaApp.WebApi.Controllers.v2.Users.DTOs.Responses;
 using PizzaApp.WebApi.Controllers.v2.Users.DTOs.Requests;
 
 namespace PizzaApp.WebApi.Controllers.v2.Authorization;
@@ -35,6 +35,6 @@ public class AuthController(IAuthManager authManager, IMapper mapper, ILogger<Au
     public async Task<IActionResult> RegisterUser([FromBody] RegisterUserRequest request)
     {
         var userModel = await authManager.RegisterUserAsync(mapper.Map<RegisterUserModel>(request));
-        return Ok(userModel);
+        return Ok(mapper.Map<UserResponse>(userModel));
     }
 }

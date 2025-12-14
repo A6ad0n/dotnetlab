@@ -2,7 +2,7 @@ namespace PizzaApp.WebApi.Controllers.v2.Discounts.DTOs.Responses;
 
 public class DiscountResponse
 {
-    public Guid ExternalId { get; set; }
+    public Guid Id { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }
     public decimal DiscountPercentage { get; set; }
