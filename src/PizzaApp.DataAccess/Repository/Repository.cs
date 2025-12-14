@@ -84,19 +84,8 @@ public class Repository<T>(IDbContextFactory<PizzaAppDbContext> contextFactory) 
             entity.CreationTime = DateTime.UtcNow;
             entity.ModificationTime = entity.CreationTime;
             
-            var entry = context.Entry(entity);
-            if (entry.State == EntityState.Detached)
-            {
-                context.Set<T>().Add(entity);
-                entry = context.Entry(entity);
-            }
-            if (entry.Property(x => x.Id).CurrentValue == 0)
-            {
-                entry.Property(x => x.Id).CurrentValue = default;
-                entry.Property(x => x.Id).IsModified = false;
-            }
-
             var result = await context.Set<T>().AddAsync(entity);
+            context.Entry(entity).State = EntityState.Added;
             await context.SaveChangesAsync();
             return result.Entity;
         }
