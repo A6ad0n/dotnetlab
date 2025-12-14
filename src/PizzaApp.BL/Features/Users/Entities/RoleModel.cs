@@ -5,6 +5,7 @@ namespace PizzaApp.BL.Features.Users.Entities;
 public class RoleModel
 {
     public int Id { get; set; }
+    public Guid ExternalId { get; set; }
     public string Name { get; set; }
     public RoleTypeModel RoleType { get; set; }
 }
