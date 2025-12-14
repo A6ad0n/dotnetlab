@@ -17,7 +17,9 @@ public class MenuServiceProfile : Profile
                 opt.MapFrom(src => src));
         
         CreateMap<v2.UpdateMenuItemRequest, UpdateMenuItemModel>();
-        CreateMap<v2.CreateMenuItemRequest, CreateMenuItemModel>();
+        CreateMap<v2.CreateMenuItemRequest, CreateMenuItemModel>()
+            .ForMember(d => d.StatusExternalId, opt => 
+                opt.MapFrom(src => src.StatusGuid));
         CreateMap<List<MenuItemModel>, v2.MenuItemListResponse>()
             .ForMember(d => d.MenuItems, opt => 
                 opt.MapFrom(src => src));

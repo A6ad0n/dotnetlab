@@ -29,10 +29,10 @@ public class MenuController(
     }
 
     [HttpGet]
-    [Route("{id:int}")]
-    public async Task<IActionResult> GetMenuItemById([FromRoute] int id)
+    [Route("{id:guid}")]
+    public async Task<IActionResult> GetMenuItemById([FromRoute] Guid id)
     {
-        var menuItemModel = await menuProvider.GetByIdAsync(id);
+        var menuItemModel = await menuProvider.GetByGuidAsync(id);
         return Ok(menuItemModel);
     }
 
@@ -46,9 +46,9 @@ public class MenuController(
     }
 
     [HttpDelete]
-    [Route("{id:int}/delete")]
+    [Route("{id:guid}/delete")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> DeleteMenuItem([FromRoute] int id)
+    public async Task<IActionResult> DeleteMenuItem([FromRoute] Guid id)
     {
         var result = await menuManager.DeleteMenuItemAsync(id);
         if (!result)  return NotFound();
@@ -56,38 +56,38 @@ public class MenuController(
     }
     
     [HttpPatch]
-    [Route("{id:int}/edit")]
+    [Route("{id:guid}/edit")]
     [Authorize (Roles = "Admin")]
-    public async Task<IActionResult> UpdateMenuItem([FromRoute] int id, [FromBody] UpdateMenuItemRequest request)
+    public async Task<IActionResult> UpdateMenuItem([FromRoute] Guid id, [FromBody] UpdateMenuItemRequest request)
     {
         var menuItemModel = await menuManager.UpdateMenuItemAsync(id, mapper.Map<UpdateMenuItemModel>(request));
         return Ok(menuItemModel);
     }
     
     [HttpPatch]
-    [Route("{id:int}/edit/discounts")]
+    [Route("{id:guid}/edit/discounts")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> ChangeMenuItemDiscounts([FromRoute] int id, [FromBody] ChangeMenuItemDiscountsRequest request)
+    public async Task<IActionResult> ChangeMenuItemDiscounts([FromRoute] Guid id, [FromBody] ChangeMenuItemDiscountsRequest request)
     {
-        var menuItemModel = await menuManager.ChangeMenuItemDiscountsAsync(id, request.DiscountIds);
+        var menuItemModel = await menuManager.ChangeMenuItemDiscountsAsync(id, request.DiscountGuids);
         return Ok(menuItemModel);
     }
     
     [HttpPatch]
-    [Route("{id:int}/edit/category")]
+    [Route("{id:guid}/edit/category")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> ChangeMenuItemCategory([FromRoute] int id, [FromBody] ChangeMenuItemCategoryRequest request)
+    public async Task<IActionResult> ChangeMenuItemCategory([FromRoute] Guid id, [FromBody] ChangeMenuItemCategoryRequest request)
     {
-        var menuItemModel = await menuManager.ChangeMenuItemCategoryAsync(id, request.CategoryId);
+        var menuItemModel = await menuManager.ChangeMenuItemCategoryAsync(id, request.CategoryGuid);
         return Ok(menuItemModel);
     }
     
     [HttpPatch]
-    [Route("{id:int}/edit/status")]
+    [Route("{id:guid}/edit/status")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> ChangeMenuItemStatus([FromRoute] int id, [FromBody] ChangeMenuItemStatusRequest request)
+    public async Task<IActionResult> ChangeMenuItemStatus([FromRoute] Guid id, [FromBody] ChangeMenuItemStatusRequest request)
     {
-        var menuItemModel = await menuManager.ChangeMenuItemStatusAsync(id, request.StatusId);
+        var menuItemModel = await menuManager.ChangeMenuItemStatusAsync(id, request.StatusGuid);
         return Ok(menuItemModel);
     }
 }

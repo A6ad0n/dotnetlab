@@ -7,8 +7,8 @@ public class CreateMenuItemRequest
     public string ImageUrl { get; set; }
     public decimal Price { get; set; }
 
-    public int CategoryId { get; set; }
-    public int StatusId { get; set; }
+    public Guid CategoryGuid { get; set; }
+    public Guid StatusGuid { get; set; }
 
-    public List<int>? DiscountIds { get; set; }
+    public List<Guid>? DiscountGuids { get; set; }
 }
