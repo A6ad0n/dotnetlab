@@ -70,25 +70,23 @@ public class Repository<T>(IDbContextFactory<PizzaAppDbContext> contextFactory) 
     public async Task<T> SaveAsync(T entity)
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
-        if (await context.Set<T>().AnyAsync(x => x.Id == entity.Id))
+
+        var existing = await context.Set<T>().FindAsync(entity.Id);
+        if (existing != null)
         {
-            entity.ModificationTime = DateTime.UtcNow;
-            var result = context.Set<T>().Attach(entity);
-            context.Entry(entity).State = EntityState.Modified;
+            context.Entry(existing).CurrentValues.SetValues(entity);
+            existing.ModificationTime = DateTime.UtcNow;
             await context.SaveChangesAsync();
-            return result.Entity;
+            return existing;
         }
-        else
-        {
-            entity.ExternalId = Guid.NewGuid();
-            entity.CreationTime = DateTime.UtcNow;
-            entity.ModificationTime = entity.CreationTime;
-            
-            var result = await context.Set<T>().AddAsync(entity);
-            context.Entry(entity).State = EntityState.Added;
-            await context.SaveChangesAsync();
-            return result.Entity;
-        }
+
+        entity.ExternalId = Guid.NewGuid();
+        entity.CreationTime = DateTime.UtcNow;
+        entity.ModificationTime = entity.CreationTime;
+
+        await context.Set<T>().AddAsync(entity);
+        await context.SaveChangesAsync();
+        return entity;
     }
 
     
