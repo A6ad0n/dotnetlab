@@ -14,7 +14,7 @@ using PizzaApp.WebApi.Controllers.v2.Users.DTOs.Responses;
 namespace PizzaApp.WebApi.Controllers.v2.Users;
 
 [ApiController]
-[Route("api/v2/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
 [ApiVersion("2.0")]
 public class UsersController(
     IUsersProvider usersProvider,

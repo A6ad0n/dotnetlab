@@ -108,7 +108,9 @@ public class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExcep
             AuthResultCode.UserNotFound => StatusCodes.Status404NotFound,
             AuthResultCode.UserAlreadyExists => StatusCodes.Status400BadRequest,
             AuthResultCode.EmailOrPasswordIsIncorrect => StatusCodes.Status401Unauthorized,
+            AuthResultCode.InvalidRefreshToken => StatusCodes.Status401Unauthorized,
             AuthResultCode.UserCreationFailure => StatusCodes.Status500InternalServerError,
+            AuthResultCode.RefreshTokenIsRequired => StatusCodes.Status400BadRequest,
             AuthResultCode.AuthorizeValidationFailure => StatusCodes.Status400BadRequest,
             AuthResultCode.RegisterValidationFailure => StatusCodes.Status400BadRequest,
             

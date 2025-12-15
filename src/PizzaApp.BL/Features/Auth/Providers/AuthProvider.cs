@@ -3,6 +3,7 @@ using Duende.IdentityServer.Models;
 using IdentityModel.Client;
 using PizzaApp.BL.Common.Exceptions;
 using PizzaApp.BL.Features.Auth.Entities;
+using PizzaApp.BL.Features.Auth.Exceptions;
 
 namespace PizzaApp.BL.Features.Auth.Providers;
 
@@ -61,7 +62,7 @@ public class AuthProvider(
         
         if (tokenResponse.IsError)
         {
-            throw new BusinessLogicException<CommonResultCode>(CommonResultCode.IdentityServerError);
+            throw new BusinessLogicException<AuthResultCode>(AuthResultCode.InvalidRefreshToken);
         }
 
         return mapper.Map<TokensResponse>(tokenResponse);

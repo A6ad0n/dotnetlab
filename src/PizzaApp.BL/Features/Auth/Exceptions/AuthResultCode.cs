@@ -19,8 +19,11 @@ public enum AuthResultCode
     [Description("Refresh token is required.")]
     RefreshTokenIsRequired = 2005,
     
+    [Description("Refresh token is invalid.")]
+    InvalidRefreshToken = 2006,
+    
     [Description("Authorize validation failure.")]
-    AuthorizeValidationFailure = 2006,
+    AuthorizeValidationFailure = 2007,
     
     [Description("Register validation failure.")]
     RegisterValidationFailure = 2009,  
