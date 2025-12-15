@@ -29,6 +29,6 @@ public interface IDiscountRepository : IRepository<DiscountEntity>
     Task<bool> ExistsStatusAsync(int statusId);
     Task<bool> ExistsStatusAsync(Guid statusGuid);
     Task<List<StatusEntity>> GetAllStatusesAsync();
-    Task UpdateDiscountStatusAsync(DiscountEntity discount, int statusId);
-    Task UpdateDiscountStatusAsync(DiscountEntity discount, Guid statusGuid);
+    Task UpdateDiscountStatusAsync(int discountId, int statusId);
+    Task UpdateDiscountStatusAsync(Guid discountGuid, Guid statusGuid);
 }
