@@ -74,7 +74,10 @@ public class TestBase
         await AdditionalOneTimeSetUp();
     }
     
-    protected virtual async Task AdditionalOneTimeSetUp() {}
+    protected virtual Task AdditionalOneTimeSetUp()
+    {
+        return Task.CompletedTask;
+    }
     
     [OneTimeTearDown]
     public async Task OneTimeTearDown()

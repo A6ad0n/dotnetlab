@@ -4,17 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace PizzaApp.WebApi.Tests;
 
-public class TestWebApplicationFactory : WebApplicationFactory<Program>
+public class TestWebApplicationFactory(Action<IServiceCollection>? configureServices = null)
+    : WebApplicationFactory<Program>
 {
-    private readonly Action<IServiceCollection> _configureServices;
-    
-    public TestWebApplicationFactory(Action<IServiceCollection> configureServices = null)
-    {
-        _configureServices = configureServices;
-    }
-
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.ConfigureServices(services => _configureServices?.Invoke(services));
+        builder.ConfigureServices(services => configureServices?.Invoke(services));
     }
 }

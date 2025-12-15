@@ -113,6 +113,7 @@ public class DiscountsControllerTests : TestBase
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         
         var content =  await response.Content.ReadFromJsonAsync<DiscountResponse>();
+        Assert.That(content, Is.Not.Null);
         Assert.That(content.Name, Is.EqualTo(request.Name));
     }
     
@@ -170,6 +171,7 @@ public class DiscountsControllerTests : TestBase
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         
         var content = await response.Content.ReadFromJsonAsync<DiscountResponse>();
+        Assert.That(content, Is.Not.Null);
         Assert.That(content.Id, Is.EqualTo(new Guid("11110000-0000-0000-0000-000000000000")));
         Assert.That(content.Status.Id, Is.EqualTo(new Guid("20000000-0000-0000-0000-000000000000")));
     }
