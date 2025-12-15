@@ -41,18 +41,18 @@ public interface IMenuItemRepository : IRepository<MenuItemEntity>
     Task<bool> ExistsCategoryAsync(int categoryId);
     Task<bool> ExistsCategoryAsync(Guid categoryGuid);
     Task<List<MenuCategoryEntity>> GetAllCategoriesAsync();
-    Task UpdateMenuItemCategoryAsync(MenuItemEntity menuItem, int categoryId);
-    Task UpdateMenuItemCategoryAsync(MenuItemEntity menuItem, Guid categoryGuid);
+    Task UpdateMenuItemCategoryAsync(int menuItemId, int categoryId);
+    Task UpdateMenuItemCategoryAsync(Guid menuItemGuid, Guid categoryGuid);
     
     Task<bool> ExistsStatusAsync(int statusId);
     Task<bool> ExistsStatusAsync(Guid statusGuid);
     Task<List<StatusEntity>> GetAllStatusesAsync();
-    Task UpdateMenuItemStatusAsync(MenuItemEntity menuItem, int statusId);
-    Task UpdateMenuItemStatusAsync(MenuItemEntity menuItem, Guid statusGuid);
+    Task UpdateMenuItemStatusAsync(int menuItemId, int statusId);
+    Task UpdateMenuItemStatusAsync(Guid menuItemGuid, Guid statusGuid);
     
     Task<List<DiscountEntity>> GetAllDiscountsAsync();
-    Task UpdateMenuItemDiscountsAsync(MenuItemEntity menuItem, List<int> discountIds);
-    Task UpdateMenuItemDiscountsAsync(MenuItemEntity menuItem, List<Guid> discountGuids);
+    Task UpdateMenuItemDiscountsAsync(int menuItemId, List<int> discountIds);
+    Task UpdateMenuItemDiscountsAsync(Guid menuItemGuid, List<Guid> discountGuids);
     
     Task<MenuItemEntity> SaveWithDiscountsAsync(MenuItemEntity menuItem, List<int> discountIds);
     Task<MenuItemEntity> SaveWithDiscountsAsync(MenuItemEntity menuItem, List<Guid> discountGuids);
