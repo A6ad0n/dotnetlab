@@ -123,9 +123,9 @@ public class DiscountManager(IDiscountRepository discountRepository, IMapper map
         
         try
         {
-            await discountRepository.UpdateDiscountStatusAsync(discount, statusId);
+            await discountRepository.UpdateDiscountStatusAsync(discount.Id, statusId);
             
-            var updatedDiscount = await discountRepository.GetByIdWithDetailsAsync(discountId);
+            var updatedDiscount = await discountRepository.GetByIdWithDetailsAsync(discount.Id);
             return mapper.Map<DiscountModel>(updatedDiscount);
         }
         catch (Exception e)
