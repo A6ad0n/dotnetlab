@@ -419,10 +419,10 @@ public class MenuItemRepository(IDbContextFactory<PizzaAppDbContext> contextFact
 
     public async Task<MenuItemEntity> SaveWithDiscountsAsync(MenuItemEntity menuItem, List<int> discountIds)
     {
-        using var scope = new TransactionScope( TransactionScopeAsyncFlowOption.Enabled); 
-        menuItem = await SaveAsync(menuItem); 
-        await UpdateMenuItemDiscountsAsync(menuItem.Id, discountIds); 
-        scope.Complete(); 
+        using var scope = new TransactionScope( TransactionScopeAsyncFlowOption.Enabled);
+        menuItem = await SaveAsync(menuItem);
+        await UpdateMenuItemDiscountsAsync(menuItem.Id, discountIds);
+        scope.Complete();
         return menuItem;
     }
     
