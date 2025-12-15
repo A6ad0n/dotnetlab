@@ -5,7 +5,7 @@ using PizzaApp.DataAccess.Entities;
 using PizzaApp.DataAccess.Entities.Primitives;
 using PizzaApp.DataAccess.Repository.DiscountRepository;
 
-namespace PizzaApp.BL.UnitTests.Features.Discounts;
+namespace PizzaApp.DataAccess.UnitTests;
 
 [TestFixture]
 public class DiscountRepositoryTests

@@ -10,6 +10,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzaApp.BL.UnitTests", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzaApp.WebApi.Tests", "src\tests\PizzaApp.WebApi.Tests\PizzaApp.WebApi.Tests.csproj", "{77B6D200-98CC-4C05-8D7B-042CF8F11414}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{280D88A1-3E10-4D07-B225-C2A51C4E07BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzaApp.DataAccess.UnitTests", "src\Tests\PizzaApp.DataAccess.UnitTests\PizzaApp.DataAccess.UnitTests.csproj", "{EBF7840A-43D9-474B-BC04-34B5ED8ACEE8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +40,14 @@ Global
 		{77B6D200-98CC-4C05-8D7B-042CF8F11414}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{77B6D200-98CC-4C05-8D7B-042CF8F11414}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{77B6D200-98CC-4C05-8D7B-042CF8F11414}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBF7840A-43D9-474B-BC04-34B5ED8ACEE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBF7840A-43D9-474B-BC04-34B5ED8ACEE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBF7840A-43D9-474B-BC04-34B5ED8ACEE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBF7840A-43D9-474B-BC04-34B5ED8ACEE8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8C1DBD3E-273E-422F-BF75-8CF209D63B05} = {280D88A1-3E10-4D07-B225-C2A51C4E07BB}
+		{77B6D200-98CC-4C05-8D7B-042CF8F11414} = {280D88A1-3E10-4D07-B225-C2A51C4E07BB}
+		{EBF7840A-43D9-474B-BC04-34B5ED8ACEE8} = {280D88A1-3E10-4D07-B225-C2A51C4E07BB}
 	EndGlobalSection
 EndGlobal
