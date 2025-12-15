@@ -220,7 +220,7 @@ public class DiscountManagerTests
         _repo.Setup(r => r.ExistsStatusAsync(statusId))
             .ReturnsAsync(true);
 
-        _repo.Setup(r => r.UpdateDiscountStatusAsync(_discountEntities[discountIndex], statusId))
+        _repo.Setup(r => r.UpdateDiscountStatusAsync(_discountEntities[discountIndex].Id, statusId))
             .Returns(Task.CompletedTask);
 
         _repo.Setup(r => r.GetByIdWithDetailsAsync(discountId))
@@ -271,7 +271,7 @@ public class DiscountManagerTests
             .ReturnsAsync(_discountEntities[0]);
         _repo.Setup(r => r.ExistsStatusAsync(2)).ReturnsAsync(true);
         
-        _repo.Setup(r => r.UpdateDiscountStatusAsync(_discountEntities[0], 2))
+        _repo.Setup(r => r.UpdateDiscountStatusAsync(_discountEntities[0].Id, 2))
             .ThrowsAsync(new Exception("POSTGRESQL SMTH FAIL"));
 
         var ex = Assert.ThrowsAsync<BusinessLogicException<DiscountResultCode>>(async () =>

@@ -155,29 +155,35 @@ public class DiscountRepository(IDbContextFactory<PizzaAppDbContext> contextFact
         return await context.Statuses.ToListAsync();
     }
 
-    public async Task UpdateDiscountStatusAsync(DiscountEntity discount, int statusId)
+    public async Task UpdateDiscountStatusAsync(int discountId, int statusId)
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
 
-        discount.StatusId = statusId;
+        var affected = await context.Discounts
+            .Where(d => d.Id == discountId)
+            .ExecuteUpdateAsync(s =>
+                s.SetProperty(m => m.StatusId, statusId));
 
-        context.Discounts.Update(discount);
-        await context.SaveChangesAsync();
+        if (affected == 0)
+            throw new InvalidOperationException($"Discount with ID {discountId} not found");
     }
     
-    public async Task UpdateDiscountStatusAsync(DiscountEntity discount, Guid statusGuid)
+    public async Task UpdateDiscountStatusAsync(Guid discountGuid, Guid statusGuid)
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
         
-        var statusId = await context.Statuses
+        var status = await context.Statuses
             .Where(s => s.ExternalId == statusGuid)
-            .Select(s => s.Id)
             .FirstOrDefaultAsync();
+        var discountId = await context.Discounts 
+            .Where(d => d.ExternalId == discountGuid)
+            .Select(d => d.Id)
+            .FirstOrDefaultAsync();
+        
+        if (status == null)
+            throw new InvalidOperationException($"Status with GUID {statusGuid} not found");
 
-        discount.StatusId = statusId;
-
-        context.Discounts.Update(discount);
-        await context.SaveChangesAsync();
+        await UpdateDiscountStatusAsync(discountId, status.Id);
     }
 
 }

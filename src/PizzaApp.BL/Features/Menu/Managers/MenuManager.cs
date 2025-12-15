@@ -158,9 +158,9 @@ public class MenuManager(IMenuItemRepository menuItemRepository, IMapper mapper,
         
         try
         {
-            await menuItemRepository.UpdateMenuItemCategoryAsync(menuItem, categoryId);
+            await menuItemRepository.UpdateMenuItemCategoryAsync(menuItem.Id, categoryId);
             
-            var updatedMenuItem = await menuItemRepository.GetByIdWithDetailsAsync(menuItemId);
+            var updatedMenuItem = await menuItemRepository.GetByIdWithDetailsAsync(menuItem.Id);
             return mapper.Map<MenuItemModel>(updatedMenuItem);
         }
         catch (Exception e)
@@ -183,9 +183,9 @@ public class MenuManager(IMenuItemRepository menuItemRepository, IMapper mapper,
         
         try
         {
-            await menuItemRepository.UpdateMenuItemStatusAsync(menuItem, statusId);
+            await menuItemRepository.UpdateMenuItemStatusAsync(menuItem.Id, statusId);
             
-            var updatedMenuItem = await menuItemRepository.GetByIdWithDetailsAsync(menuItemId);
+            var updatedMenuItem = await menuItemRepository.GetByIdWithDetailsAsync(menuItem.Id);
             return mapper.Map<MenuItemModel>(updatedMenuItem);
         }
         catch (Exception e)
@@ -217,9 +217,9 @@ public class MenuManager(IMenuItemRepository menuItemRepository, IMapper mapper,
             
             var newDiscountIds = discountIds.Where(r => allDiscountIds.Contains(r)).ToList();
             
-            await menuItemRepository.UpdateMenuItemDiscountsAsync(menuItem, newDiscountIds);
+            await menuItemRepository.UpdateMenuItemDiscountsAsync(menuItem.Id, newDiscountIds);
 
-            var updatedMenuItem = await menuItemRepository.GetByIdWithDetailsAsync(menuItemId);
+            var updatedMenuItem = await menuItemRepository.GetByIdWithDetailsAsync(menuItem.Id);
             return mapper.Map<MenuItemModel>(updatedMenuItem);
         }
         catch (Exception e) when (e is not BusinessLogicException<MenuResultCode>)

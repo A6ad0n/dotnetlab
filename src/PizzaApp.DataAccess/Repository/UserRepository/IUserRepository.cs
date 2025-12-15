@@ -40,8 +40,9 @@ public interface IUserRepository : IRepository<UserEntity>
     Task<int> GetUsersWithOrdersCountAsync();
 
     Task<List<RoleEntity>> GetAllRolesAsync();
-    Task UpdateUserRolesAsync(UserEntity user, List<int> newRoleIds);
-    Task UpdateUserRolesAsync(UserEntity user, List<Guid> newRoleGuids);
+    Task UpdateUserRolesAsync(int userId, List<int> newRoleIds);
+    Task UpdateUserRolesAsync(Guid userGuid, List<Guid> newRoleGuids);
 
-    Task UpdateUserInfoAsync(UserEntity user, bool isBlocked, string? blockInfo);
+    Task UpdateUserInfoAsync(int userId, bool isBlocked, string? blockInfo);
+    Task UpdateUserInfoAsync(Guid userGuid, bool isBlocked, string? blockInfo);
 }

@@ -72,9 +72,9 @@ public class UsersManager(IUserRepository userRepository, IMapper mapper, ILogge
         
         try
         {
-            await userRepository.UpdateUserInfoAsync(user, model.IsBlocked, model.BlockInformation);
+            await userRepository.UpdateUserInfoAsync(user.Id, model.IsBlocked, model.BlockInformation);
             
-            var updatedUser = await userRepository.GetByIdWithDetailsAsync(userId);
+            var updatedUser = await userRepository.GetByIdWithDetailsAsync(user.Id);
             return mapper.Map<UserModel>(updatedUser);
         }
         catch (Exception e)
@@ -106,9 +106,9 @@ public class UsersManager(IUserRepository userRepository, IMapper mapper, ILogge
             
             var newRoleIds = roleIds.Where(r => allRoleIds.Contains(r)).ToList();
             
-            await userRepository.UpdateUserRolesAsync(user, newRoleIds);
+            await userRepository.UpdateUserRolesAsync(user.Id, newRoleIds);
 
-            var updatedUser = await userRepository.GetByIdWithDetailsAsync(userId);
+            var updatedUser = await userRepository.GetByIdWithDetailsAsync(user.Id);
             return mapper.Map<UserModel>(updatedUser);
         }
         catch (Exception ex) when (ex is not BusinessLogicException<UserResultCode>)

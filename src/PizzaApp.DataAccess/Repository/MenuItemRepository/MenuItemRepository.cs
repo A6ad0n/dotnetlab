@@ -1,3 +1,4 @@
+using System.Transactions;
 using Microsoft.EntityFrameworkCore;
 using PizzaApp.DataAccess.Context;
 using PizzaApp.DataAccess.Entities;
@@ -267,29 +268,35 @@ public class MenuItemRepository(IDbContextFactory<PizzaAppDbContext> contextFact
         return await context.MenuCategories.ToListAsync();
     }
 
-    public async Task UpdateMenuItemCategoryAsync(MenuItemEntity menuItem, int categoryId)
+    public async Task UpdateMenuItemCategoryAsync(int menuItemId, int categoryId)
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
 
-        menuItem.CategoryId = categoryId;
+        var affected = await context.MenuItems
+            .Where(m => m.Id == menuItemId)
+            .ExecuteUpdateAsync(s =>
+                s.SetProperty(m => m.CategoryId, categoryId));
 
-        context.MenuItems.Update(menuItem);
-        await context.SaveChangesAsync();
+        if (affected == 0)
+            throw new InvalidOperationException($"MenuItem with ID {menuItemId} not found");
     }
     
-    public async Task UpdateMenuItemCategoryAsync(MenuItemEntity menuItem, Guid categoryGuid)
+    public async Task UpdateMenuItemCategoryAsync(Guid menuItemGuid, Guid categoryGuid)
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
 
-        var categoryId = await context.MenuCategories
+        var category = await context.MenuCategories
             .Where(c => c.ExternalId == categoryGuid)
-            .Select(c => c.Id)
+            .FirstOrDefaultAsync();
+        var menuItemId = await context.MenuItems
+            .Where(m => m.ExternalId == menuItemGuid)
+            .Select(m => m.Id)
             .FirstOrDefaultAsync();
         
-        menuItem.CategoryId = categoryId;
+        if (category == null)
+            throw new InvalidOperationException($"Category with GUID {categoryGuid} not found");
 
-        context.MenuItems.Update(menuItem);
-        await context.SaveChangesAsync();
+        await UpdateMenuItemCategoryAsync(menuItemId, category.Id);
     }
 
 
@@ -310,29 +317,35 @@ public class MenuItemRepository(IDbContextFactory<PizzaAppDbContext> contextFact
         return await context.Statuses.ToListAsync();
     }
 
-    public async Task UpdateMenuItemStatusAsync(MenuItemEntity menuItem, int statusId)
+    public async Task UpdateMenuItemStatusAsync(int menuItemId, int statusId)
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
 
-        menuItem.StatusId = statusId;
+        var affected = await context.MenuItems
+            .Where(m => m.Id == menuItemId)
+            .ExecuteUpdateAsync(s =>
+                s.SetProperty(m => m.StatusId, statusId));
 
-        context.MenuItems.Update(menuItem);
-        await context.SaveChangesAsync();
+        if (affected == 0)
+            throw new InvalidOperationException($"MenuItem with ID {menuItemId} not found");
     }
     
-    public async Task UpdateMenuItemStatusAsync(MenuItemEntity menuItem, Guid statusGuid)
+    public async Task UpdateMenuItemStatusAsync(Guid menuItemGuid, Guid statusGuid)
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
 
-        var statusId = await context.Statuses
+        var status = await context.Statuses
             .Where(s => s.ExternalId == statusGuid)
-            .Select(s => s.Id)
+            .FirstOrDefaultAsync();
+        var menuItemId = await context.MenuItems
+            .Where(m => m.ExternalId == menuItemGuid)
+            .Select(m => m.Id)
             .FirstOrDefaultAsync();
         
-        menuItem.StatusId = statusId;
+        if (status == null)
+            throw new InvalidOperationException($"Status with GUID {statusGuid} not found");
 
-        context.MenuItems.Update(menuItem);
-        await context.SaveChangesAsync();
+        await UpdateMenuItemStatusAsync(menuItemId, status.Id);
     }
 
 
@@ -342,104 +355,89 @@ public class MenuItemRepository(IDbContextFactory<PizzaAppDbContext> contextFact
         return await context.Discounts.ToListAsync();
     }
     
-    public async Task UpdateMenuItemDiscountsAsync(MenuItemEntity menuItem, List<int> newDiscountIds)
+    public async Task UpdateMenuItemDiscountsAsync(int menuItemId, List<int> newDiscountIds)
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
 
-        var existingDiscounts = await context.MenuItemDiscounts
-            .Where(ur => ur.MenuItemId == menuItem.Id)
-            .ToListAsync();
-        
-        if (existingDiscounts.Count != 0)
-            context.MenuItemDiscounts.RemoveRange(existingDiscounts);
-        
-        var discountsToAdd = newDiscountIds.Select(id => new MenuItemDiscountEntity()
-        {
-            MenuItemId = menuItem.Id,
-            DiscountId = id,
-            CreationTime = DateTime.UtcNow,
-            ModificationTime = DateTime.UtcNow,
-            ExternalId = Guid.NewGuid()
-        }).ToList();
+        var menuItemExists = await context.MenuItems
+            .AnyAsync(m => m.Id == menuItemId);
 
-        if (discountsToAdd.Count != 0)
-            context.MenuItemDiscounts.AddRange(discountsToAdd);
+        if (!menuItemExists)
+            throw new InvalidOperationException($"MenuItem with ID {menuItemId} not found");
+
+        var newIds = newDiscountIds.Distinct().ToHashSet();
+
+        var existingIds = await context.MenuItemDiscounts
+            .Where(md => md.MenuItemId == menuItemId)
+            .Select(md => md.DiscountId)
+            .ToListAsync();
+
+        var toRemove = existingIds.Except(newIds).ToList();
+        var toAdd = newIds.Except(existingIds).ToList();
+
+        if (toRemove.Count > 0)
+        {
+            await context.MenuItemDiscounts
+                .Where(md => md.MenuItemId == menuItemId && toRemove.Contains(md.DiscountId))
+                .ExecuteDeleteAsync();
+        }
+
+        if (toAdd.Count > 0)
+        {
+            var now = DateTime.UtcNow;
+
+            context.MenuItemDiscounts.AddRange(
+                toAdd.Select(discountId => new MenuItemDiscountEntity
+                {
+                    MenuItemId = menuItemId,
+                    DiscountId = discountId,
+                    ExternalId = Guid.NewGuid(),
+                    CreationTime = now,
+                    ModificationTime = now
+                })
+            );
+        }
 
         await context.SaveChangesAsync();
     }
     
-    public async Task UpdateMenuItemDiscountsAsync(MenuItemEntity menuItem, List<Guid> newDiscountGuids)
+    public async Task UpdateMenuItemDiscountsAsync(Guid menuItemGuid, List<Guid> newDiscountGuids)
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
-
-        var existingDiscounts = await context.MenuItemDiscounts
-            .Where(ur => ur.MenuItemId == menuItem.Id)
-            .ToListAsync();
         
-        if (existingDiscounts.Count != 0)
-            context.MenuItemDiscounts.RemoveRange(existingDiscounts);
+        var menuItem = await context.MenuItems.Where(m => m.ExternalId == menuItemGuid).FirstOrDefaultAsync();
+        if (menuItem == null)
+            throw new InvalidOperationException($"MenuItem with GUID {menuItemGuid} not found");
         
         var discountIds = await context.Discounts
             .Where(d => newDiscountGuids.Contains(d.ExternalId))
             .Select(d => d.Id)
             .ToListAsync();
-        
-        var discountsToAdd = discountIds.Select(id => new MenuItemDiscountEntity()
-        {
-            MenuItemId = menuItem.Id,
-            DiscountId = id,
-            CreationTime = DateTime.UtcNow,
-            ModificationTime = DateTime.UtcNow,
-            ExternalId = Guid.NewGuid()
-        }).ToList();
 
-        if (discountsToAdd.Count != 0)
-            context.MenuItemDiscounts.AddRange(discountsToAdd);
-
-        await context.SaveChangesAsync();
+        await UpdateMenuItemDiscountsAsync(menuItem.Id, discountIds);
     }
 
     public async Task<MenuItemEntity> SaveWithDiscountsAsync(MenuItemEntity menuItem, List<int> discountIds)
     {
-        await using var context = await _contextFactory.CreateDbContextAsync();
-        await using var transaction = await context.Database.BeginTransactionAsync();
-
-        try
-        {
-            menuItem = await SaveAsync(menuItem);
-            await UpdateMenuItemDiscountsAsync(menuItem, discountIds);
-            await transaction.CommitAsync();
-            await context.Entry(menuItem)
-                .Collection(m => m.Discounts)
-                .LoadAsync();
-            return menuItem;
-        }
-        catch
-        {
-            await transaction.RollbackAsync();
-            throw;
-        }
+        using var scope = new TransactionScope( TransactionScopeAsyncFlowOption.Enabled);
+        menuItem = await SaveAsync(menuItem);
+        await UpdateMenuItemDiscountsAsync(menuItem.Id, discountIds);
+        scope.Complete();
+        return menuItem;
     }
     
     public async Task<MenuItemEntity> SaveWithDiscountsAsync(MenuItemEntity menuItem, List<Guid> discountGuids)
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
-        await using var transaction = await context.Database.BeginTransactionAsync();
 
-        try
-        {
-            menuItem = await SaveAsync(menuItem);
-            await UpdateMenuItemDiscountsAsync(menuItem, discountGuids);
-            await transaction.CommitAsync();
-            await context.Entry(menuItem)
-                .Collection(m => m.Discounts)
-                .LoadAsync();
-            return menuItem;
-        }
-        catch
-        {
-            await transaction.RollbackAsync();
-            throw;
-        }
+        var discountIds = await context.Discounts
+            .Where(d => discountGuids.Contains(d.ExternalId))
+            .Select(d => d.Id)
+            .ToListAsync();
+
+        if (discountIds.Count != discountGuids.Count)
+            throw new InvalidOperationException("One or more discounts not found");
+
+        return await SaveWithDiscountsAsync(menuItem, discountIds);
     }
 }

@@ -253,16 +253,4 @@ public class DiscountRepositoryTests
         
         Assert.That(list.Count, Is.EqualTo(3));
     }
-
-    public async Task UpdateDiscountStatusAsync_Success()
-    {
-        var discount = (await _repo.GetAllWithDetailsAsync()).First();
-
-        await _repo.UpdateDiscountStatusAsync(discount, 2);
-        
-        var updated = await _repo.GetByIdWithStatusAsync(discount.Id);
-        
-        Assert.That(updated.StatusId, Is.EqualTo(2));
-        Assert.That(updated.Status.Name, Is.EqualTo(Status.DiscountExpired));
-    }
 }
