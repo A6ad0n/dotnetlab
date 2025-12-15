@@ -289,8 +289,8 @@ public class MenuItemRepository(IDbContextFactory<PizzaAppDbContext> contextFact
             .Where(c => c.ExternalId == categoryGuid)
             .FirstOrDefaultAsync();
         var menuItemId = await context.MenuItems
-            .Where(mi => mi.ExternalId == menuItemGuid)
-            .Select(c => c.Id)
+            .Where(m => m.ExternalId == menuItemGuid)
+            .Select(m => m.Id)
             .FirstOrDefaultAsync();
         
         if (category == null)
@@ -338,14 +338,14 @@ public class MenuItemRepository(IDbContextFactory<PizzaAppDbContext> contextFact
             .Where(s => s.ExternalId == statusGuid)
             .FirstOrDefaultAsync();
         var menuItemId = await context.MenuItems
-            .Where(mi => mi.ExternalId == menuItemGuid)
-            .Select(c => c.Id)
+            .Where(m => m.ExternalId == menuItemGuid)
+            .Select(m => m.Id)
             .FirstOrDefaultAsync();
         
         if (status == null)
             throw new InvalidOperationException($"Status with GUID {statusGuid} not found");
 
-        await UpdateMenuItemCategoryAsync(menuItemId, status.Id);
+        await UpdateMenuItemStatusAsync(menuItemId, status.Id);
     }
 
 
