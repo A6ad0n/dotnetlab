@@ -274,176 +274,117 @@ public class UserRepository(IDbContextFactory<PizzaAppDbContext> contextFactory)
             .CountAsync();
     }
     
-    public async Task UpdateUserInfoAsync(UserEntity user, bool isBlocked, string? blockInfo)
+    public async Task UpdateUserInfoAsync(int userId, bool isBlocked, string? blockInfo)
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
 
-        UserInfoEntity userInfo;
-        if (user.UserInfo != null)
-        {
-            userInfo = user.UserInfo;
-            userInfo.ModificationTime = DateTime.UtcNow;
-        }
-        else
+        var user = await context.Users
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user == null)
+            throw new InvalidOperationException($"User with ID {userId} not found");
+
+        var userInfo = await context.UserInfos
+            .FirstOrDefaultAsync(ui => ui.Id == user.UserInfoId);
+
+        if (userInfo == null)
         {
             userInfo = new UserInfoEntity
             {
                 ExternalId = Guid.NewGuid(),
                 CreationTime = DateTime.UtcNow,
                 ModificationTime = DateTime.UtcNow,
+                IsBlocked = isBlocked,
+                BlockInformation = blockInfo
             };
-            await context.UserInfos.AddAsync(userInfo);
-            await context.SaveChangesAsync();
+
             user.UserInfo = userInfo;
-            user.UserInfoId = user.UserInfo.Id;
+        }
+        else
+        {
+            userInfo.IsBlocked = isBlocked;
+            userInfo.BlockInformation = blockInfo;
+            userInfo.ModificationTime = DateTime.UtcNow;
         }
 
-        userInfo.IsBlocked = isBlocked;
-        userInfo.BlockInformation = blockInfo;
-
-        context.Users.Update(user);
         await context.SaveChangesAsync();
     }
+    public async Task UpdateUserInfoAsync(Guid userGuid, bool isBlocked, string? blockInfo)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
 
-    
+        var user = await context.Users
+            .FirstOrDefaultAsync(u => u.ExternalId == userGuid);
+
+        if (user == null)
+            throw new InvalidOperationException($"User with GUID {userGuid} not found");
+
+        await UpdateUserInfoAsync(user.Id, isBlocked, blockInfo);
+    }
+
+
     public async Task<List<RoleEntity>> GetAllRolesAsync()
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
         return await context.Roles.ToListAsync();
     }
     
-    public async Task UpdateUserRolesAsync(UserEntity user, List<int> newRoleIds)
+    public async Task UpdateUserRolesAsync(int userId, List<int> newRoleIds)
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
-        
-        var existingRoles = await context.UserRoles
-            .Where(ur => ur.UserId == user.Id)
-            .ToListAsync();
-        
-        if (existingRoles.Any())
-            context.UserRoles.RemoveRange(existingRoles);
-        
-        var rolesToAdd = newRoleIds.Select(id => new UserRoleEntity
-        {
-            UserId = user.Id,
-            RoleId = id,
-            CreationTime = DateTime.UtcNow,
-            ModificationTime = DateTime.UtcNow,
-            ExternalId = Guid.NewGuid()
-        }).ToList();
 
-        if (rolesToAdd.Count != 0)
-            context.UserRoles.AddRange(rolesToAdd);
+        var userExists = await context.Users
+            .AnyAsync(u => u.Id == userId);
+
+        if (!userExists)
+            throw new InvalidOperationException($"User with ID {userId} not found");
+
+        var newIds = newRoleIds.Distinct().ToHashSet();
+
+        var existingRoleIds = await context.UserRoles
+            .Where(ur => ur.UserId == userId)
+            .Select(ur => ur.RoleId)
+            .ToListAsync();
+
+        var toRemove = existingRoleIds.Except(newIds).ToList();
+        var toAdd = newIds.Except(existingRoleIds).ToList();
+
+        if (toRemove.Count > 0)
+        {
+            await context.UserRoles
+                .Where(ur => ur.UserId == userId && toRemove.Contains(ur.RoleId))
+                .ExecuteDeleteAsync();
+        }
+
+        if (toAdd.Count > 0)
+        {
+            var now = DateTime.UtcNow;
+
+            context.UserRoles.AddRange(toAdd.Select(roleId => new UserRoleEntity
+            {
+                UserId = userId,
+                RoleId = roleId,
+                ExternalId = Guid.NewGuid(),
+                CreationTime = now,
+                ModificationTime = now
+            }));
+        }
 
         await context.SaveChangesAsync();
     }
-    
-    public async Task UpdateUserRolesAsync(UserEntity user, List<Guid> newRoleGuids)
+    public async Task UpdateUserRolesAsync(Guid userGuid, List<Guid> newRoleGuids)
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
         
-        var existingRoles = await context.UserRoles
-            .Where(ur => ur.UserId == user.Id)
-            .ToListAsync();
-        
-        if (existingRoles.Any())
-            context.UserRoles.RemoveRange(existingRoles);
+        var user = await context.Users.Where(u => u.ExternalId == userGuid).FirstOrDefaultAsync();
+        if (user == null)
+            throw new InvalidOperationException($"User with GUID {userGuid} not found");
         
         var roleIds = await context.Roles
             .Where(r => newRoleGuids.Contains(r.ExternalId))
             .Select(r => r.Id)
             .ToListAsync();
-        
-        var rolesToAdd = roleIds.Select(id => new UserRoleEntity
-        {
-            UserId = user.Id,
-            RoleId = id,
-            CreationTime = DateTime.UtcNow,
-            ModificationTime = DateTime.UtcNow,
-            ExternalId = Guid.NewGuid()
-        }).ToList();
 
-        if (rolesToAdd.Count != 0)
-            context.UserRoles.AddRange(rolesToAdd);
-
-        await context.SaveChangesAsync();
+        await UpdateUserRolesAsync(user.Id, roleIds);
     }
-
-
-
-
-   private async Task<UserEntity> SaveWithDetailsAsync(UserEntity user)
-    {
-        await using var context = await _contextFactory.CreateDbContextAsync();
-        
-        if (user.UserInfo != null)
-        {
-            if (user.UserInfo.Id > 0)
-            {
-                user.UserInfo.ModificationTime = DateTime.UtcNow;
-                context.UserInfos.Update(user.UserInfo);
-            }
-            else
-            {
-                user.UserInfo.CreationTime = DateTime.UtcNow;
-                user.UserInfo.ModificationTime = DateTime.UtcNow;
-                await context.UserInfos.AddAsync(user.UserInfo);
-            }
-        }
-
-        if (user.Id > 0)
-        {
-            user.ModificationTime = DateTime.UtcNow;
-            context.Users.Update(user);
-        }
-        else
-        {
-            user.ExternalId = Guid.NewGuid();
-            user.CreationTime = DateTime.UtcNow;
-            user.ModificationTime = user.CreationTime;
-            await context.Users.AddAsync(user);
-        }
-        
-        if (user.Roles != null)
-        {
-            var existingRoles = await context.UserRoles
-                .Where(ur => ur.UserId == user.Id)
-                .ToListAsync();
-
-            var newRoleIds = user.Roles.Select(r => r.RoleId).Distinct().ToList();
-            var existingRoleIds = existingRoles.Select(er => er.RoleId).ToHashSet();
-            
-            var rolesToRemove = existingRoles
-                .Where(er => !newRoleIds.Contains(er.RoleId))
-                .ToList();
-            if (rolesToRemove.Any())
-                context.UserRoles.RemoveRange(rolesToRemove);
-            
-            var rolesToAdd = newRoleIds
-                .Where(rid => !existingRoleIds.Contains(rid))
-                .Select(rid => new UserRoleEntity
-                {
-                    UserId = user.Id,
-                    RoleId = rid,
-                    CreationTime = DateTime.UtcNow,
-                    ModificationTime = DateTime.UtcNow,
-                    ExternalId = Guid.NewGuid()
-                })
-                .ToList();
-
-            if (rolesToAdd.Count != 0)
-                context.UserRoles.AddRange(rolesToAdd);
-        }
-
-
-        await context.SaveChangesAsync();
-        if (user.UserInfo != null)
-            user.UserInfoId = user.UserInfo.Id;
-        user.Roles = await context.UserRoles
-            .Where(ur => ur.UserId == user.Id)
-            .Include(ur => ur.Role)
-            .ToListAsync();
-        return user;
-    }
-
 }
